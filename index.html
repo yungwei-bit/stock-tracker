@@ -148,23 +148,69 @@ main{
 }
 
 /* ---------- cards ---------- */
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-left:3px solid var(--brass);
-  border-radius:4px;
-  padding:16px 18px;
+/* ---------- cards & grid ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brass);
+  border-radius: 4px;
+  padding: 16px 18px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0; /* 防止子元素撐大卡片 */
 }
-.card + .card{margin-top:12px;}
-.grid{
-  display:grid;
-  gap:12px;
+
+/* 網格系統：強制等寬 */
+.grid-4 {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 12px !important;
+  width: 100%;
 }
-.grid-4{grid-template-columns:repeat(4,1fr);}
-.grid-2{grid-template-columns:repeat(2,1fr);}
-@media(max-width:760px){
-  .grid-4{grid-template-columns:repeat(2,1fr);}
-  .grid-2{grid-template-columns:1fr;}
+
+.grid-2 {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  width: 100%;
+}
+
+.holder-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.holder-card .holder-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--navy);
+  margin: 0 0 10px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13.5px;
+  width: 100%;
+}
+
+.metric-row .label { color: var(--muted); }
+.metric-row .value { 
+  font-family: var(--font-mono); 
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media(max-width: 760px) {
+  .grid-4 { 
+    grid-template-columns: repeat(2, 1fr) !important; 
+  }
+  .grid-2 { 
+    grid-template-columns: 1fr !important; 
+  }
 }
 
 .total-bar{
@@ -364,7 +410,7 @@ tbody tr:hover{background:#F9F6EE;}
 <header class="cover">
   <div class="cover-inner">
     <div>
-      <p class="cover-title">家庭股票紀錄本</p>
+      <p class="cover-title">股票紀錄</p>
       <p class="cover-sub" id="holderListSub">本人・阿寶・媽媽・挖貴</p>
     </div>
     <div class="stamp">記</div>
@@ -574,7 +620,7 @@ function renderOverview(){
       <div><div class="metric-label">全部目前市值</div><div class="metric-value">${fmtMoney(totalMarket)}</div></div>
       <div><div class="metric-label">全部損益合計</div><div class="metric-value ${pnlClass(totalPnl)}">${fmtMoney(totalPnl)}</div></div>
     </div>
-    <div class="grid grid-4">${cards}</div>
+    <div class="grid-4">${cards}</div>
     ${holdings.length===0?'<p class="hint" style="margin-top:16px;">還沒有任何交易紀錄，請先到「02｜交易明細」新增第一筆買進紀錄。</p>':''}
   `;
 }
