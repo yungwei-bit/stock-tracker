@@ -3,25 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家庭股票紀錄本</title>
+<title>股票紀錄本</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-:root{
-  --paper:#EFEAE0;
-  --card:#FFFDF8;
-  --ink:#20242B;
-  --navy:#16233A;
-  --navy-light:#24334F;
-  --brass:#A9792C;
-  --brass-light:#C9A25A;
-  --red:#AE3729;
-  --green:#2E6F52;
-  --line:#D9D0BC;
-  --muted:#736C5E;
-  --font-display:'Noto Serif TC', serif;
-  --font-body:'Noto Sans TC', sans-serif;
-  --font-mono:'JetBrains Mono', monospace;
+:root {
+  --paper: #EFEAE0;
+  --card: #FFFDF8;
+  --ink: #20242B;
+  --navy: #A98B73;       /* 改成 #A98B73 */
+  --navy-light: #BCA38C; /* 調亮版，作為漸層與懸停效果 */
+  --brass: #A9792C;
+  --brass-light: #C9A25A;
+  --red: #AE3729;
+  --green: #2E6F52;
+  --line: #D9D0BC;
+  --muted: #736C5E;
+  --font-display: 'Noto Serif TC', serif;
+  --font-body: 'Noto Sans TC', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 *{box-sizing:border-box;}
@@ -196,23 +196,25 @@ main{
 /* ---------- 修正 2：表格與橫向滾動容器修復 ---------- */
 .table-wrap {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* 讓 iOS 手機滑動更順暢 */
+  -webkit-overflow-scrolling: touch;
   border: 1px solid var(--line);
   border-radius: 4px;
   background: var(--card);
   width: 100%;
 }
 
+/* 給予表格足夠的寬度，避免文字折行擠在一起 */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
-  min-width: 600px; /* 給予表格最小寬度，讓多欄位在手機上以橫向滑動呈現，不會擠壓在一起 */
+  font-size: 13.5px;
+  min-width: 780px; /* 拉大寬度，確保所有欄位文字能完整展開 */
 }
 
+/* 保持文字單行顯示與適當間距 */
 thead th, tbody td {
-  padding: 8px 8px;
-  white-space: nowrap; /* 保持欄位整齊，依靠外層 .table-wrap 進行橫向滾動 */
+  padding: 10px 12px;
+  white-space: nowrap; /* 靜止自動換行，保持資料清晰整齊 */
 }
 
 tbody td.txt{font-family:var(--font-body);}
