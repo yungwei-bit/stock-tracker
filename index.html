@@ -3,27 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>股票紀錄本</title>
+<title>家庭股票紀錄本</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
+
 :root {
-  /* 明亮溫潤大地色系 (Light Warm Earth Tone) */
-  --paper: #F8F5F0;       /* 明亮米沙白 背景 */
-  --card: #FFFFFF;        /* 純白 卡片背景 */
-  --ink: #382E29;         /* 深暖棕 主要文字 */
-  
-  --navy: #685243;        /* 淺栗木棕（取代原本深藍色：頂部、總覽卡片、主要按鈕） */
-  --navy-light: #846C5B;  /* 暖栗木色（用於漸層與 Hover） */
-  
-  --brass: #B08B57;       /* 奶茶金/古銅色（邊框與印章） */
-  --brass-light: #D8C3A5; /* 淡金燕麥色（裝飾線與選中標籤） */
-  
-  --red: #B85042;         /* 柔和磚紅（獲利） */
-  --green: #48775B;       /* 鼠尾草綠（虧損） */
-  --line: #E8E2D9;        /* 淺沙岩分隔線 */
-  --muted: #8C7B70;       /* 暖灰褐色 次要文字 */
-  
+  /* 大地色系 (Earth Tones) 主題配置 */
+  --paper: #EFEAE0;         /* 燕麥米色背景 */
+  --card: #FFFDF8;          /* 暖白卡片背景 */
+  --ink: #2D2721;           /* 深咖啡黑文字 */
+  --navy: #5C4033;          /* 深暖棕色 (替代原本的藍色：Header, Total Bar, 按鈕) */
+  --navy-light: #7A5745;    /* 淺暖棕色 (漸層與 Hover 懸停效果) */
+  --brass: #A9792C;         /* 黃銅金 (重點邊框與強調) */
+  --brass-light: #C9A25A;   /* 明亮金 (印章與選中分頁下劃線) */
+  --red: #AE3729;           /* 磚紅色 (買進/獲利) */
+  --green: #2E6F52;         /* 森林綠 (賣出/虧損) */
+  --line: #D9D0BC;          /* 淺沙色分割線 */
+  --muted: #736C5E;         /* 風化灰棕 (次要文字) */
   --font-display: 'Noto Serif TC', serif;
   --font-body: 'Noto Sans TC', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -32,7 +29,7 @@
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
-  background:var(--paper);
+  background:var(--paper); 
   color:var(--ink);
   font-family:var(--font-body);
   font-size:15px;
@@ -40,17 +37,20 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-/* 頂部 Cover 漸層 */
-.cover {
-  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
-  color: #FAF7F2;
+/* ---------- header / cover ---------- */
+.cover{
+  background:linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
+  color:#EFE7D6;
+  padding:28px 20px 20px;
+  position:relative;
+  overflow:hidden;
 }
 .cover::after{
   content:"";
   position:absolute;
   right:-40px; top:-40px;
   width:180px; height:180px;
-  border:1px solid rgba(255,255,255,0.15);
+  border:1px solid rgba(233,214,166,0.18);
   border-radius:50%;
 }
 .cover-inner{
@@ -73,7 +73,7 @@ body{
 .cover-sub{
   margin:6px 0 0;
   font-size:13px;
-  color:#D8CEBE;
+  color:#B9AF97;
   font-family:var(--font-mono);
 }
 .stamp{
@@ -88,10 +88,10 @@ body{
   transform:rotate(-6deg);
 }
 
-/* 頁籤選單列 */
-.tabs {
-  background: var(--navy);
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+/* ---------- tabs ---------- */
+.tabs{
+  background:var(--navy);
+  border-top:1px solid rgba(255,255,255,0.08);
   overflow-x:auto;
   white-space:nowrap;
   scrollbar-width:none;
@@ -102,10 +102,10 @@ body{
   margin:0 auto;
   display:flex;
 }
-.tab-btn {
+.tab-btn{
   background:none;
   border:none;
-  color: #D3C7BB; /* 已修正：移除冷藍灰色 */
+  color:#9CA3B5;
   font-family:var(--font-body);
   font-weight:500;
   font-size:14px;
@@ -122,9 +122,9 @@ body{
   font-size:12px;
   color:var(--brass-light);
 }
-.tab-btn.active {
-  color: #FFFFFF;
-  border-bottom-color: var(--brass-light);
+.tab-btn.active{
+  color:#F5EFDF;
+  border-bottom-color:var(--brass-light);
 }
 
 /* ---------- layout ---------- */
@@ -161,10 +161,14 @@ main{
 }
 .grid-4{grid-template-columns:repeat(4,1fr);}
 .grid-2{grid-template-columns:repeat(2,1fr);}
+@media(max-width:760px){
+  .grid-4{grid-template-columns:repeat(2,1fr);}
+  .grid-2{grid-template-columns:1fr;}
+}
 
 .total-bar{
   background:var(--navy);
-  color:#FAF7F2;
+  color:#F0EAD9;
   border-radius:4px;
   padding:18px 20px;
   margin-bottom:20px;
@@ -173,7 +177,7 @@ main{
   gap:24px;
   align-items:center;
 }
-.total-bar .metric-label{color:#D3C7BB;font-size:12px;font-family:var(--font-mono);} /* 已修正：移除冷藍灰色 */
+.total-bar .metric-label{color:#9CA3B5;font-size:12px;font-family:var(--font-mono);}
 .total-bar .metric-value{font-family:var(--font-mono);font-size:22px;font-weight:600;}
 
 .holder-card .holder-name{
@@ -191,7 +195,7 @@ main{
 .loss{color:var(--green);}
 .flat{color:var(--muted);}
 
-/* ---------- 表格與橫向滾動容器 ---------- */
+/* ---------- 修正 2：表格與橫向滾動容器修復 ---------- */
 .table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -201,35 +205,23 @@ main{
   width: 100%;
 }
 
+/* 給予表格足夠的寬度，避免文字折行擠在一起 */
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13.5px;
-  min-width: 780px;
+  min-width: 780px; /* 拉大寬度，確保所有欄位文字能完整展開 */
 }
 
-thead th{
-  text-align:left;
-  font-family:var(--font-body);
-  font-weight:600;
-  font-size:12px;
-  color:var(--muted);
-  padding:10px 12px;
-  border-bottom:1px solid var(--line);
-  background:#F2ECE4;
-  white-space:nowrap;
-}
-
-tbody td {
+/* 保持文字單行顯示與適當間距 */
+thead th, tbody td {
   padding: 10px 12px;
-  white-space: nowrap;
-  border-bottom:1px solid var(--line);
-  font-family:var(--font-mono);
+  white-space: nowrap; /* 靜止自動換行，保持資料清晰整齊 */
 }
 
 tbody td.txt{font-family:var(--font-body);}
 tbody tr:last-child td{border-bottom:none;}
-tbody tr:hover{background:#F8F4EE;}
+tbody tr:hover{background:#F9F6EE;}
 .num-col{text-align:right;}
 
 .pill{
@@ -239,11 +231,11 @@ tbody tr:hover{background:#F8F4EE;}
   font-size:12px;
   font-family:var(--font-body);
   font-weight:500;
-  background:#EFE8DC;
+  background:#EFE7D2;
   color:var(--navy);
 }
-.pill.sell{background:#F2DFDC;color:var(--red);}
-.pill.buy{background:#DFEADF;color:var(--green);}
+.pill.sell{background:#EADAD6;color:var(--red);}
+.pill.buy{background:#DCE7DF;color:var(--green);}
 
 .icon-btn{
   border:none;background:none;cursor:pointer;
@@ -265,52 +257,20 @@ tbody tr:hover{background:#F8F4EE;}
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
-
-.field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:12px;color:var(--muted);}
-.field input, .field select {
-  font-family:var(--font-body);
-  font-size:14px;
-  padding:8px 10px;
-  border:1px solid var(--line);
-  border-radius:3px;
-  background:#fff;
-  color:var(--ink);
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-.field input:focus, .field select:focus{outline:2px solid var(--brass-light);outline-offset:1px;}
-
-.form-actions{margin-top:14px;display:flex;gap:10px;align-items:center;}
-.btn{
-  font-family:var(--font-body);
-  font-weight:600;
-  font-size:13.5px;
-  padding:9px 18px;
-  border-radius:3px;
-  border:1px solid var(--navy);
-  background:var(--navy);
-  color:#FAF7F2;
-  cursor:pointer;
-}
-.btn:hover{background:var(--navy-light);}
-.btn.secondary{background:transparent;color:var(--navy);}
-.hint{font-size:12px;color:var(--muted);}
-
-/* ---------- RWD ---------- */
 @media(max-width: 760px){
   main {
-    padding: 12px 10px 40px;
+    padding: 12px 10px 40px; /* 縮減手機版邊距 */
   }
 
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-2 { grid-template-columns: 1fr; }
   
+  /* 手機版將表單改為單欄，避免輸入框擠在同一行 */
   .form-grid { 
     grid-template-columns: 1fr !important; 
   }
   
+  /* 讓跨欄的備註欄位在手機上恢復單欄 */
   .field[style*="grid-column"] { 
     grid-column: span 1 !important; 
   }
@@ -324,6 +284,27 @@ tbody tr:hover{background:#F8F4EE;}
     font-size: 18px;
   }
 }
+/* 強制輸入框與下拉選單不要超出螢幕寬度 */
+.field input, .field select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.form-actions{margin-top:14px;display:flex;gap:10px;align-items:center;}
+.btn{
+  font-family:var(--font-body);
+  font-weight:600;
+  font-size:13.5px;
+  padding:9px 18px;
+  border-radius:3px;
+  border:1px solid var(--navy);
+  background:var(--navy);
+  color:#F0EAD9;
+  cursor:pointer;
+}
+.btn:hover{background:var(--navy-light);}
+.btn.secondary{background:transparent;color:var(--navy);}
+.hint{font-size:12px;color:var(--muted);}
 
 /* ---------- holder pills nav (tab 04) ---------- */
 .holder-select{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
@@ -339,7 +320,7 @@ tbody tr:hover{background:#F8F4EE;}
 }
 .holder-select button.active{
   background:var(--navy);
-  color:#FAF7F2;
+  color:#F0EAD9;
   border-color:var(--navy);
 }
 
@@ -360,7 +341,7 @@ tbody tr:hover{background:#F8F4EE;}
 
 .toast{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-  background:var(--navy);color:#FAF7F2;
+  background:var(--navy);color:#F0EAD9;
   padding:10px 20px;border-radius:4px;font-size:13.5px;
   opacity:0;pointer-events:none;transition:opacity .25s;
   z-index:50;
@@ -397,6 +378,7 @@ tbody tr:hover{background:#F8F4EE;}
 
 <script>
 /* ================= Google Sheets API Setup ================= */
+// ⚠️ 請把這裡替換成你剛剛部署發布得到的 Web 應用程式 URL
 const API_URL = "https://script.google.com/macros/s/AKfycbzT8rvsYlbJtT2FakIZxGgphf5gDgM9rqietzRAV9DueZN7b5hWt-BhVoXzWf67c68Yyg/exec"; 
 
 let toastTimer=null;
@@ -411,9 +393,9 @@ function showToast(msg){
 /* ================= state ================= */
 let state={
   holders:['本人','阿寶','媽媽','挖貴'],
-  transactions:[], 
-  cashflow:[],     
-  prices:{},       
+  transactions:[], // {id,date,holder,code,name,action,shares,price,fee,note}
+  cashflow:[],     // {id,date,person,type,amount,note}
+  prices:{},       // {code: price}
   activeTab:'01',
   personalHolder:null
 };
@@ -427,6 +409,7 @@ const TABS=[
 ];
 
 /* ================= API 串接與儲存 ================= */
+// 1. 從 Google Sheets 載入所有資料
 async function fetchFromGoogleSheet(){
   try{
     showToast('連線中，載入雲端資料...');
@@ -445,9 +428,11 @@ async function fetchFromGoogleSheet(){
   }
 }
 
+// 2. 將所有資料同步回 Google Sheets
 async function saveToGoogleSheet(){
   try{
     showToast('雲端同步儲存中...');
+    // 使用 no-cors 或標準 POST 發送 JSON
     await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -863,7 +848,7 @@ function bindActiveEvents(){
       };
       state.transactions.push(t);
       renderActive();
-      await saveToGoogleSheet();
+      await saveToGoogleSheet(); // 同步到雲端
     });
 
     document.querySelectorAll('[data-del-tx]').forEach(btn=>{
@@ -871,7 +856,7 @@ function bindActiveEvents(){
         if(!confirm('確定要刪除這筆交易紀錄嗎？')) return;
         state.transactions = state.transactions.filter(t=>t.id!==btn.dataset.delTx);
         renderActive();
-        await saveToGoogleSheet();
+        await saveToGoogleSheet(); // 同步到雲端
       });
     });
 
@@ -882,7 +867,7 @@ function bindActiveEvents(){
       if(state.holders.includes(name)){ showToast('這個持有人已經存在'); return; }
       state.holders.push(name);
       renderActive();
-      await saveToGoogleSheet();
+      await saveToGoogleSheet(); // 同步到雲端
     });
   }
 
@@ -891,7 +876,7 @@ function bindActiveEvents(){
       const code=inp.dataset.priceCode;
       state.prices[code]=Number(inp.value)||0;
       renderActive();
-      await saveToGoogleSheet();
+      await saveToGoogleSheet(); // 同步到雲端
     });
   });
 
@@ -916,7 +901,7 @@ function bindActiveEvents(){
       };
       state.cashflow.push(c);
       renderActive();
-      await saveToGoogleSheet();
+      await saveToGoogleSheet(); // 同步到雲端
     });
 
     document.querySelectorAll('[data-del-cf]').forEach(btn=>{
@@ -924,7 +909,7 @@ function bindActiveEvents(){
         if(!confirm('確定要刪除這筆資金往來紀錄嗎？')) return;
         state.cashflow = state.cashflow.filter(c=>c.id!==btn.dataset.delCf);
         renderActive();
-        await saveToGoogleSheet();
+        await saveToGoogleSheet(); // 同步到雲端
       });
     });
   }
@@ -933,7 +918,7 @@ function bindActiveEvents(){
 /* ================= init ================= */
 async function init(){
   renderTabs();
-  await fetchFromGoogleSheet();
+  await fetchFromGoogleSheet(); // 初始化先從雲端拉資料
   renderActive();
 }
 init();
