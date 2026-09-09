@@ -193,27 +193,28 @@ main{
 .loss{color:var(--green);}
 .flat{color:var(--muted);}
 
-/* ---------- tables ---------- */
+/* ---------- 修正 2：表格與橫向滾動容器修復 ---------- */
 .table-wrap {
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* 讓手機滑動表格更順暢 */
+  -webkit-overflow-scrolling: touch; /* 讓 iOS 手機滑動更順暢 */
   border: 1px solid var(--line);
   border-radius: 4px;
   background: var(--card);
-  width: 100%; /* 確保容器不超出螢幕 */
+  width: 100%;
 }
+
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px; /* 手機上字體稍微微調小一點 */
-  min-width: 100%; /* 移除原本硬性的 640px 限制 */
+  font-size: 13px;
+  min-width: 600px; /* 給予表格最小寬度，讓多欄位在手機上以橫向滑動呈現，不會擠壓在一起 */
 }
 
 thead th, tbody td {
-  padding: 8px 6px; /* 縮小單元格邊距，讓內容更好擠進手機螢幕 */
-  white-space: normal; /* 允許文字過長時自動換行 */
-  word-break: break-all;
+  padding: 8px 8px;
+  white-space: nowrap; /* 保持欄位整齊，依靠外層 .table-wrap 進行橫向滾動 */
 }
+
 tbody td.txt{font-family:var(--font-body);}
 tbody tr:last-child td{border-bottom:none;}
 tbody tr:hover{background:#F9F6EE;}
@@ -247,30 +248,44 @@ tbody tr:hover{background:#F9F6EE;}
   padding:18px;
   margin-bottom:18px;
 }
-.form-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
 }
 @media(max-width: 760px){
+  main {
+    padding: 12px 10px 40px; /* 縮減手機版邊距 */
+  }
+
   .grid-4 { grid-template-columns: repeat(2, 1fr); }
   .grid-2 { grid-template-columns: 1fr; }
-  .form-grid { grid-template-columns: 1fr; } /* 表單在手機上改成單欄，更好點擊 */
   
-  main {
-    padding: 12px 10px 40px; /* 縮減兩側留白，把更多空間給內容 */
+  /* 手機版將表單改為單欄，避免輸入框擠在同一行 */
+  .form-grid { 
+    grid-template-columns: 1fr !important; 
   }
   
+  /* 讓跨欄的備註欄位在手機上恢復單欄 */
+  .field[style*="grid-column"] { 
+    grid-column: span 1 !important; 
+  }
+
   .total-bar {
     gap: 12px;
     padding: 12px 14px;
   }
-  
+
   .total-bar .metric-value {
-    font-size: 18px; /* 縮小上方總覽數據字體，避免折行破版 */
+    font-size: 18px;
   }
 }
-.field input:focus, .field select:focus{outline:2px solid var(--brass-light);outline-offset:1px;}
+/* 強制輸入框與下拉選單不要超出螢幕寬度 */
+.field input, .field select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
 .form-actions{margin-top:14px;display:flex;gap:10px;align-items:center;}
 .btn{
   font-family:var(--font-body);
