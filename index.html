@@ -3,24 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>家庭股票紀錄本</title>
+<title>股票紀錄</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-
 
 :root {
   /* 大地色系 (Earth Tones) 主題配置 */
   --paper: #EFEAE0;         /* 燕麥米色背景 */
   --card: #FFFDF8;          /* 暖白卡片背景 */
   --ink: #2D2721;           /* 深咖啡黑文字 */
-  --navy: #5C4033;          /* 深暖棕色 (替代原本的藍色：Header, Total Bar, 按鈕) */
-  --navy-light: #7A5745;    /* 淺暖棕色 (漸層與 Hover 懸停效果) */
-  --brass: #d6b784;         /* 黃銅金 (重點邊框與強調) */
-  --brass-light: #c2a571;   /* 明亮金 (印章與選中分頁下劃線) */
-  --red: #ed4d3b;           /* 磚紅色 (買進/獲利) */
-  --green: #51a882;         /* 森林綠 (賣出/虧損) */
+  --navy: #5C4033;          /* 深暖棕色 */
+  --navy-light: #7A5745;    /* 淺暖棕色 */
+  --brass: #d6b784;         /* 黃銅金 */
+  --brass-light: #c2a571;   /* 明亮金 */
+  --red: #ed4d3b;           /* 磚紅色 */
+  --green: #51a882;         /* 森林綠 */
   --line: #D9D0BC;          /* 淺沙色分割線 */
-  --muted: #736C5E;         /* 風化灰棕 (次要文字) */
+  --muted: #736C5E;         /* 風化灰棕 */
   --font-display: 'Noto Serif TC', serif;
   --font-body: 'Noto Sans TC', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -73,7 +72,7 @@ body{
 .cover-sub{
   margin:6px 0 0;
   font-size:13px;
-  color:#D1D5DB; /* 👈 改為明亮灰白 */
+  color:#D1D5DB;
   font-family:var(--font-mono);
 }
 .stamp{
@@ -88,7 +87,6 @@ body{
   transform:rotate(-6deg);
 }
 
-/* ---------- tabs ---------- */
 /* ---------- tabs ---------- */
 .tabs{
   background:var(--navy);
@@ -106,7 +104,7 @@ body{
 .tab-btn{
   background:none;
   border:none;
-  color:#E5E7EB; /* 👈 改為純灰白（原本為帶藍色的 #9CA3B5） */
+  color:#E5E7EB;
   font-family:var(--font-body);
   font-weight:500;
   font-size:14px;
@@ -147,7 +145,6 @@ main{
   margin:0 0 20px;
 }
 
-/* ---------- cards ---------- */
 /* ---------- cards & grid ---------- */
 .card {
   background: var(--card);
@@ -157,10 +154,9 @@ main{
   padding: 16px 18px;
   box-sizing: border-box;
   width: 100%;
-  min-width: 0; /* 防止子元素撐大卡片 */
+  min-width: 0;
 }
 
-/* 網格系統：強制等寬 */
 .grid-4 {
   display: grid !important;
   grid-template-columns: repeat(4, 1fr) !important;
@@ -225,28 +221,17 @@ main{
   align-items:center;
 }
 .total-bar .metric-label{
-  color:#E5E7EB; /* 👈 改為純灰白 */
+  color:#E5E7EB;
   font-size:12px;
   font-family:var(--font-mono);
 }
 .total-bar .metric-value{font-family:var(--font-mono);font-size:22px;font-weight:600;}
 
-.holder-card .holder-name{
-  font-family:var(--font-display);
-  font-weight:700;
-  font-size:16px;
-  color:var(--navy);
-  margin:0 0 10px;
-}
-.metric-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13.5px;}
-.metric-row .label{color:var(--muted);}
-.metric-row .value{font-family:var(--font-mono);font-weight:600;}
-
 .gain{color:var(--red);}
 .loss{color:var(--green);}
 .flat{color:var(--muted);}
 
-/* ---------- 修正 2：表格與橫向滾動容器修復 ---------- */
+/* ---------- 表格與容器 ---------- */
 .table-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -256,18 +241,16 @@ main{
   width: 100%;
 }
 
-/* 給予表格足夠的寬度，避免文字折行擠在一起 */
 table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13.5px;
-  min-width: 780px; /* 拉大寬度，確保所有欄位文字能完整展開 */
+  min-width: 780px;
 }
 
-/* 保持文字單行顯示與適當間距 */
 thead th, tbody td {
   padding: 10px 12px;
-  white-space: nowrap; /* 靜止自動換行，保持資料清晰整齊 */
+  white-space: nowrap;
 }
 
 tbody td.txt{font-family:var(--font-body);}
@@ -310,37 +293,36 @@ tbody tr:hover{background:#F9F6EE;}
 }
 @media(max-width: 760px){
   main {
-    padding: 12px 10px 40px; /* 縮減手機版邊距 */
+    padding: 12px 10px 40px;
   }
-
-  .grid-4 { grid-template-columns: repeat(2, 1fr); }
-  .grid-2 { grid-template-columns: 1fr; }
-  
-  /* 手機版將表單改為單欄，避免輸入框擠在同一行 */
   .form-grid { 
     grid-template-columns: 1fr !important; 
   }
-  
-  /* 讓跨欄的備註欄位在手機上恢復單欄 */
   .field[style*="grid-column"] { 
     grid-column: span 1 !important; 
   }
-
   .total-bar {
     gap: 12px;
     padding: 12px 14px;
   }
-
   .total-bar .metric-value {
     font-size: 18px;
   }
 }
-/* 強制輸入框與下拉選單不要超出螢幕寬度 */
+
 .field input, .field select {
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--ink);
 }
+.field input:focus, .field select:focus{outline:2px solid var(--brass-light);outline-offset:1px;}
 .form-actions{margin-top:14px;display:flex;gap:10px;align-items:center;}
 .btn{
   font-family:var(--font-body);
@@ -357,7 +339,7 @@ tbody tr:hover{background:#F9F6EE;}
 .btn.secondary{background:transparent;color:var(--navy);}
 .hint{font-size:12px;color:var(--muted);}
 
-/* ---------- holder pills nav (tab 04) ---------- */
+/* ---------- holder pills nav ---------- */
 .holder-select{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
 .holder-select button{
   font-family:var(--font-body);
@@ -399,7 +381,13 @@ tbody tr:hover{background:#F9F6EE;}
 }
 .toast.show{opacity:1;}
 
-.new-holder-row{display:flex;gap:8px;margin-bottom:18px;align-items:center;}
+.new-holder-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:18px;
+  align-items:center;
+  flex-wrap: wrap;
+}
 .new-holder-row input{
   padding:7px 10px;border:1px solid var(--line);border-radius:3px;font-family:var(--font-body);font-size:13px;
 }
@@ -413,7 +401,7 @@ tbody tr:hover{background:#F9F6EE;}
       <p class="cover-title">股票紀錄</p>
       <p class="cover-sub" id="holderListSub">本人・阿寶・媽媽・挖貴</p>
     </div>
-    <div class="stamp">記</div>
+    <div class="stamp">帳</div>
   </div>
 </header>
 
@@ -429,7 +417,6 @@ tbody tr:hover{background:#F9F6EE;}
 
 <script>
 /* ================= Google Sheets API Setup ================= */
-// ⚠️ 請把這裡替換成你剛剛部署發布得到的 Web 應用程式 URL
 const API_URL = "https://script.google.com/macros/s/AKfycbzT8rvsYlbJtT2FakIZxGgphf5gDgM9rqietzRAV9DueZN7b5hWt-BhVoXzWf67c68Yyg/exec"; 
 
 let toastTimer=null;
@@ -444,9 +431,10 @@ function showToast(msg){
 /* ================= state ================= */
 let state={
   holders:['本人','阿寶','媽媽','挖貴'],
-  transactions:[], // {id,date,holder,code,name,action,shares,price,fee,note}
-  cashflow:[],     // {id,date,person,type,amount,note}
-  prices:{},       // {code: price}
+  transactions:[], 
+  cashflow:[],     
+  prices:{},       
+  stocks:{'2330':'台積電', '0050':'元大台灣50'},
   activeTab:'01',
   personalHolder:null
 };
@@ -456,11 +444,10 @@ const TABS=[
   {id:'02',label:'交易明細'},
   {id:'03',label:'持股總表'},
   {id:'04',label:'個人資產'},
-  {id:'05',label:'資金往來'}
+  {id:'05',label:'資金往來與代管帳戶'}
 ];
 
 /* ================= API 串接與儲存 ================= */
-// 1. 從 Google Sheets 載入所有資料
 async function fetchFromGoogleSheet(){
   try{
     showToast('連線中，載入雲端資料...');
@@ -472,6 +459,7 @@ async function fetchFromGoogleSheet(){
       state.transactions = data.transactions || [];
       state.cashflow = data.cashflow || [];
       state.prices = data.prices || {};
+      if(data.stocks && Object.keys(data.stocks).length > 0) state.stocks = data.stocks;
     }
   }catch(e){
     console.error('Fetch Google Sheet Failed:', e);
@@ -479,11 +467,9 @@ async function fetchFromGoogleSheet(){
   }
 }
 
-// 2. 將所有資料同步回 Google Sheets
 async function saveToGoogleSheet(){
   try{
     showToast('雲端同步儲存中...');
-    // 使用 no-cors 或標準 POST 發送 JSON
     await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -492,7 +478,8 @@ async function saveToGoogleSheet(){
         holders: state.holders,
         transactions: state.transactions,
         cashflow: state.cashflow,
-        prices: state.prices
+        prices: state.prices,
+        stocks: state.stocks
       })
     });
     showToast('已同步儲存至 Google 試算表！');
@@ -614,7 +601,7 @@ function renderOverview(){
 
   return `
     <p class="section-title">01｜總覽</p>
-    <p class="section-desc">一眼看到每個人的投入成本、目前市值、損益，以及全部資產合計。</p>
+    <p class="section-desc">投入成本、目前市值、損益，以及全部資產合計。</p>
     <div class="total-bar">
       <div><div class="metric-label">全部投入成本</div><div class="metric-value">${fmtMoney(totalInvested)}</div></div>
       <div><div class="metric-label">全部目前市值</div><div class="metric-value">${fmtMoney(totalMarket)}</div></div>
@@ -629,6 +616,10 @@ function renderOverview(){
 function renderTransactions(){
   const rows=[...state.transactions].sort((a,b)=> a.date<b.date?1:a.date>b.date?-1:0);
   const holderOptions = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('');
+
+  const stockOptions = Object.entries(state.stocks)
+    .map(([code, name]) => `<option value="${code}">${code}｜${name}</option>`)
+    .join('');
 
   const tableRows = rows.map(t=>`
     <tr>
@@ -646,22 +637,26 @@ function renderTransactions(){
 
   return `
     <p class="section-title">02｜交易明細</p>
-    <p class="section-desc">唯一需要持續手動輸入的地方，記錄每一筆買進、賣出及交易費用。</p>
+    <p class="section-desc">記錄每一筆買進、賣出及交易費用。</p>
 
     <div class="form-card">
       <form id="txForm">
         <div class="form-grid">
           <div class="field"><label>日期</label><input type="date" id="tx_date" value="${todayStr()}" required></div>
           <div class="field"><label>持有人</label><select id="tx_holder">${holderOptions}</select></div>
-          <div class="field"><label>股票代號</label><input type="text" id="tx_code" placeholder="例如 2330" required></div>
-          <div class="field"><label>股票名稱</label><input type="text" id="tx_name" placeholder="例如 台積電" required></div>
+          <div class="field"><label>選擇股票</label>
+            <select id="tx_stock_select" required>
+              <option value="" disabled selected>請選擇股票</option>
+              ${stockOptions}
+            </select>
+          </div>
           <div class="field"><label>買賣別</label>
             <select id="tx_action"><option value="buy">買進</option><option value="sell">賣出</option></select>
           </div>
           <div class="field"><label>股數</label><input type="number" id="tx_shares" min="0" step="1" required></div>
           <div class="field"><label>成交價</label><input type="number" id="tx_price" min="0" step="0.01" required></div>
           <div class="field"><label>手續費／稅</label><input type="number" id="tx_fee" min="0" step="1" value="0"></div>
-          <div class="field" style="grid-column:span 2;"><label>備註</label><input type="text" id="tx_note" placeholder="選填"></div>
+          <div class="field" style="grid-column:span 1;"><label>備註</label><input type="text" id="tx_note" placeholder="選填"></div>
         </div>
         <div class="form-actions">
           <button type="submit" class="btn">新增這筆交易</button>
@@ -671,9 +666,10 @@ function renderTransactions(){
     </div>
 
     <div class="new-holder-row">
-      <span class="hint">持有人不夠用？</span>
-      <input type="text" id="newHolderInput" placeholder="輸入新持有人名稱">
-      <button class="btn secondary" id="addHolderBtn">新增持有人</button>
+      <span class="hint">新增股票清單？</span>
+      <input type="text" id="newStockCodeInput" placeholder="股票代號" style="width: 140px;">
+      <input type="text" id="newStockNameInput" placeholder="股票名稱" style="width: 140px;">
+      <button class="btn secondary" id="addStockBtn">新增股票</button>
     </div>
 
     <div class="table-wrap">
@@ -715,7 +711,7 @@ function renderHoldings(){
 
   return `
     <p class="section-title">03｜持股總表</p>
-    <p class="section-desc">用「持有人＋股票」統計股數、平均成本、現價與未實現損益。現價欄可直接手動更新，同一代號的現價會套用到所有人。</p>
+    <p class="section-desc">用「持有人＋股票」統計股數、平均成本、現價與未實現損益。</p>
     <div class="table-wrap">
       <table>
         <thead><tr>
@@ -738,7 +734,7 @@ function renderPersonal(){
     <button class="${state.personalHolder===h?'active':''}" data-personal-holder="${h}">${h}</button>`).join('');
 
   if(!state.personalHolder){
-    return `<p class="section-title">04｜個人資產</p><p class="section-desc">分開檢視本人、阿寶、媽媽、挖貴各自的投資狀況。</p><div class="empty-state">尚未設定任何持有人</div>`;
+    return `<p class="section-title">04｜個人資產</p><p class="section-desc">分開檢視各自的投資狀況。</p><div class="empty-state">尚未設定任何持有人</div>`;
   }
 
   const holder=state.personalHolder;
@@ -805,32 +801,75 @@ function renderPersonal(){
   `;
 }
 
-/* ================= 05 資金往來 ================= */
+/* ================= 05 資金往來 (結合股票買賣自動計算) ================= */
 function renderCashflow(){
   const holderOptions = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('');
   const rows=[...state.cashflow].sort((a,b)=> a.date<b.date?1:-1);
 
+  // 1. 初始化每個人的代管現金帳戶
   const balances={};
   for(const h of state.holders) balances[h]=0;
+
+  // 2. 計入人工紀錄的資金往來
   for(const c of state.cashflow){
     if(!(c.person in balances)) balances[c.person]=0;
     const amt=Number(c.amount)||0;
-    if(c.type==='advance') balances[c.person]+=amt;
-    else if(c.type==='transfer_in') balances[c.person]-=amt;
-    else if(c.type==='return') balances[c.person]-=amt;
+    if(c.type==='transfer_in') balances[c.person] += amt; // 預存匯款/投入資金
+    else if(c.type==='return') balances[c.person] -= amt;  // 返還現金/提領
+    else if(c.type==='advance') balances[c.person] -= amt; // 代墊雜項
   }
 
-  const balanceCards = Object.entries(balances).map(([name,bal])=>`
+  // 3. 自動連動【股票買賣】：買股票扣錢，賣股票加錢！
+  for(const t of state.transactions){
+    if(!(t.holder in balances)) balances[t.holder]=0;
+    const shares = Number(t.shares)||0;
+    const price = Number(t.price)||0;
+    const fee = Number(t.fee)||0;
+    
+    if(t.action === 'buy'){
+      const totalCost = (shares * price) + fee;
+      balances[t.holder] -= totalCost; // 買股票 -> 扣除花費
+    } else if(t.action === 'sell'){
+      const totalProceeds = (shares * price) - fee;
+      balances[t.holder] += totalProceeds; // 賣股票 -> 資金回收加回
+    }
+  }
+
+  // 4. 渲染卡片：區分「本人」與「其他家人」的標籤
+  const balanceCards = Object.entries(balances).map(([name,bal])=>{
+    const isMe = (name === '本人');
+    
+    // 標籤文字邏輯
+    let labelText = '';
+    let hintText = '';
+
+    if (isMe) {
+      labelText = '目前可用資金';
+      hintText = bal >= 0 
+        ? '（自己手頭可再投入買股的閒置現金）' 
+        : '（目前買股已透支/墊付，需再投入資金）';
+    } else {
+      labelText = bal >= 0 ? '代管剩餘現金' : '需要補給我的金額(代墊)';
+      hintText = bal >= 0 
+        ? '（你手上有他的現金，可隨時幫買股或退還）' 
+        : '（買股或代墊金額已超過預存，對方需補款）';
+    }
+
+    return `
     <div class="card holder-card">
       <p class="holder-name">${name}</p>
       <div class="metric-row">
-        <span class="label">${bal>=0?'目前欠我':'我目前欠他/她'}</span>
-        <span class="value ${bal>0?'gain':bal<0?'loss':'flat'}">${fmtMoney(Math.abs(bal))}</span>
+        <span class="label">${labelText}</span>
+        <span class="value ${bal > 0 ? 'gain' : bal < 0 ? 'loss' : 'flat'}">${fmtMoney(Math.abs(bal))}</span>
       </div>
-    </div>`).join('');
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">
+        ${hintText}
+      </div>
+    </div>`;
+  }).join('');
 
-  const typeLabel={advance:'我代墊',transfer_in:'他匯款給我',return:'我返還給他'};
-  const typePill={advance:'sell',transfer_in:'buy',return:''};
+  const typeLabel={transfer_in:'匯款/預存資金', return:'返還/提領現金', advance:'其他雜項代墊'};
+  const typePill={transfer_in:'buy', return:'sell', advance:''};
 
   const tableRows = rows.map(c=>`
     <tr>
@@ -843,8 +882,8 @@ function renderCashflow(){
     </tr>`).join('');
 
   return `
-    <p class="section-title">05｜資金往來</p>
-    <p class="section-desc">記錄誰匯錢給你、代墊多少、返還多少，避免代買資金和投資損益混在一起。</p>
+    <p class="section-title">05｜資金往來與可用現金</p>
+    <p class="section-desc">自動彙整「資金進出 + 買賣股票扣除/回收」，算出可用資金與代管金額。</p>
 
     <div class="grid grid-4" style="margin-bottom:20px;">${balanceCards}</div>
 
@@ -853,123 +892,37 @@ function renderCashflow(){
         <div class="form-grid">
           <div class="field"><label>日期</label><input type="date" id="cf_date" value="${todayStr()}" required></div>
           <div class="field"><label>對象</label><select id="cf_person">${holderOptions}</select></div>
-          <div class="field"><label>類型</label>
+          <div class="field"><label>資金動作</label>
             <select id="cf_type">
-              <option value="advance">我代墊（我先幫他出錢）</option>
-              <option value="transfer_in">他匯款給我</option>
-              <option value="return">我返還給他</option>
+              <option value="transfer_in">匯款 / 注入資金（預存買股金）</option>
+              <option value="return">返還 / 提領現金（退還款項或提領）</option>
+              <option value="advance">代墊雜項（如過戶費、額外規費）</option>
             </select>
           </div>
           <div class="field"><label>金額</label><input type="number" id="cf_amount" min="0" step="1" required></div>
-          <div class="field" style="grid-column:span 2;"><label>備註</label><input type="text" id="cf_note" placeholder="選填，例如：買台積電代墊"></div>
+          <div class="field" style="grid-column:span 2;"><label>備註</label><input type="text" id="cf_note" placeholder="選填，例如：轉帳預存買台積電"></div>
         </div>
         <div class="form-actions">
-          <button type="submit" class="btn">新增這筆紀錄</button>
-          <span class="hint">正數代表「對方欠我」，負數代表「我欠對方」</span>
+          <button type="submit" class="btn">新增資金紀錄</button>
+          <span class="hint">買賣股票的花費與回收會由系統自動計算，無需重複在此處輸入！</span>
         </div>
       </form>
     </div>
 
+    <p class="section-title" style="font-size:16px;">人工資金進出明細</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>日期</th><th>對象</th><th>類型</th><th class="num-col">金額</th><th>備註</th><th></th></tr></thead>
-        <tbody>${tableRows || '<tr><td colspan="6"><div class="empty-state">還沒有資金往來紀錄</div></td></tr>'}</tbody>
+        <thead><tr><th>日期</th><th>對象</th><th>動作</th><th class="num-col">金額</th><th>備註</th><th></th></tr></thead>
+        <tbody>${tableRows || '<tr><td colspan="6"><div class="empty-state">還沒有人工資金往來紀錄</div></td></tr>'}</tbody>
       </table>
     </div>
   `;
 }
 
-/* ================= events ================= */
-function bindActiveEvents(){
-  const txForm=document.getElementById('txForm');
-  if(txForm){
-    txForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const t={
-        id:uid(),
-        date:document.getElementById('tx_date').value,
-        holder:document.getElementById('tx_holder').value,
-        code:document.getElementById('tx_code').value.trim(),
-        name:document.getElementById('tx_name').value.trim(),
-        action:document.getElementById('tx_action').value,
-        shares:Number(document.getElementById('tx_shares').value),
-        price:Number(document.getElementById('tx_price').value),
-        fee:Number(document.getElementById('tx_fee').value)||0,
-        note:document.getElementById('tx_note').value.trim()
-      };
-      state.transactions.push(t);
-      renderActive();
-      await saveToGoogleSheet(); // 同步到雲端
-    });
-
-    document.querySelectorAll('[data-del-tx]').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{
-        if(!confirm('確定要刪除這筆交易紀錄嗎？')) return;
-        state.transactions = state.transactions.filter(t=>t.id!==btn.dataset.delTx);
-        renderActive();
-        await saveToGoogleSheet(); // 同步到雲端
-      });
-    });
-
-    document.getElementById('addHolderBtn').addEventListener('click', async ()=>{
-      const input=document.getElementById('newHolderInput');
-      const name=input.value.trim();
-      if(!name) return;
-      if(state.holders.includes(name)){ showToast('這個持有人已經存在'); return; }
-      state.holders.push(name);
-      renderActive();
-      await saveToGoogleSheet(); // 同步到雲端
-    });
-  }
-
-  document.querySelectorAll('[data-price-code]').forEach(inp=>{
-    inp.addEventListener('change', async ()=>{
-      const code=inp.dataset.priceCode;
-      state.prices[code]=Number(inp.value)||0;
-      renderActive();
-      await saveToGoogleSheet(); // 同步到雲端
-    });
-  });
-
-  document.querySelectorAll('[data-personal-holder]').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      state.personalHolder=btn.dataset.personalHolder;
-      renderActive();
-    });
-  });
-
-  const cfForm=document.getElementById('cfForm');
-  if(cfForm){
-    cfForm.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const c={
-        id:uid(),
-        date:document.getElementById('cf_date').value,
-        person:document.getElementById('cf_person').value,
-        type:document.getElementById('cf_type').value,
-        amount:Number(document.getElementById('cf_amount').value),
-        note:document.getElementById('cf_note').value.trim()
-      };
-      state.cashflow.push(c);
-      renderActive();
-      await saveToGoogleSheet(); // 同步到雲端
-    });
-
-    document.querySelectorAll('[data-del-cf]').forEach(btn=>{
-      btn.addEventListener('click', async ()=>{
-        if(!confirm('確定要刪除這筆資金往來紀錄嗎？')) return;
-        state.cashflow = state.cashflow.filter(c=>c.id!==btn.dataset.delCf);
-        renderActive();
-        await saveToGoogleSheet(); // 同步到雲端
-      });
-    });
-  }
-}
-
 /* ================= init ================= */
 async function init(){
   renderTabs();
-  await fetchFromGoogleSheet(); // 初始化先從雲端拉資料
+  await fetchFromGoogleSheet();
   renderActive();
 }
 init();
