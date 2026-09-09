@@ -194,24 +194,25 @@ main{
 .flat{color:var(--muted);}
 
 /* ---------- tables ---------- */
-.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--card);}
-table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px;}
-thead th{
-  text-align:left;
-  font-family:var(--font-body);
-  font-weight:600;
-  font-size:12px;
-  color:var(--muted);
-  padding:10px 12px;
-  border-bottom:1px solid var(--line);
-  background:#F6F2E8;
-  white-space:nowrap;
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* 讓手機滑動表格更順暢 */
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--card);
+  width: 100%; /* 確保容器不超出螢幕 */
 }
-tbody td{
-  padding:10px 12px;
-  border-bottom:1px solid var(--line);
-  font-family:var(--font-mono);
-  white-space:nowrap;
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px; /* 手機上字體稍微微調小一點 */
+  min-width: 100%; /* 移除原本硬性的 640px 限制 */
+}
+
+thead th, tbody td {
+  padding: 8px 6px; /* 縮小單元格邊距，讓內容更好擠進手機螢幕 */
+  white-space: normal; /* 允許文字過長時自動換行 */
+  word-break: break-all;
 }
 tbody td.txt{font-family:var(--font-body);}
 tbody tr:last-child td{border-bottom:none;}
@@ -251,17 +252,23 @@ tbody tr:hover{background:#F9F6EE;}
   grid-template-columns:repeat(4,1fr);
   gap:12px;
 }
-@media(max-width:760px){.form-grid{grid-template-columns:repeat(2,1fr);}}
-.field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:12px;color:var(--muted);}
-.field input, .field select{
-  font-family:var(--font-body);
-  font-size:14px;
-  padding:8px 10px;
-  border:1px solid var(--line);
-  border-radius:3px;
-  background:#fff;
-  color:var(--ink);
+@media(max-width: 760px){
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; } /* 表單在手機上改成單欄，更好點擊 */
+  
+  main {
+    padding: 12px 10px 40px; /* 縮減兩側留白，把更多空間給內容 */
+  }
+  
+  .total-bar {
+    gap: 12px;
+    padding: 12px 14px;
+  }
+  
+  .total-bar .metric-value {
+    font-size: 18px; /* 縮小上方總覽數據字體，避免折行破版 */
+  }
 }
 .field input:focus, .field select:focus{outline:2px solid var(--brass-light);outline-offset:1px;}
 .form-actions{margin-top:14px;display:flex;gap:10px;align-items:center;}
