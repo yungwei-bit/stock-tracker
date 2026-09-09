@@ -8,18 +8,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 :root {
-  /* 大地色系 (Earth Tones) 主題配置 */
-  --paper: #EFEAE0;         /* 燕麥米色背景 */
-  --card: #FFFDF8;          /* 暖白卡片背景 */
-  --ink: #2D2721;           /* 深咖啡黑文字 */
-  --navy: #5C4033;          /* 深暖棕色 (替代原本的藍色：Header, Total Bar, 按鈕) */
-  --navy-light: #7A5745;    /* 淺暖棕色 (漸層與 Hover 懸停效果) */
-  --brass: #A9792C;         /* 黃銅金 (重點邊框與強調) */
-  --brass-light: #C9A25A;   /* 明亮金 (印章與選中分頁下劃線) */
-  --red: #AE3729;           /* 磚紅色 (買進/獲利) */
-  --green: #2E6F52;         /* 森林綠 (賣出/虧損) */
-  --line: #D9D0BC;          /* 淺沙色分割線 */
-  --muted: #736C5E;         /* 風化灰棕 (次要文字) */
+  /* 大地色系配色方案 (Warm Earth Tone) */
+  --paper: #F4EFEB;       /* 柔和米沙色 背景 */
+  --card: #FCFAFA;        /* 近純暖白 卡片背景 */
+  --ink: #2B2119;         /* 深木炭棕 主要文字顏色 */
+  
+  --navy: #3D2E24;        /* 深咖啡泥土色（覆蓋原本所有藍色區域：頂部、總覽大卡片、按鈕、選中頁籤） */
+  --navy-light: #5C4434;  /* 暖木棕色（用於頂部漸層與 Hover 效果） */
+  
+  --brass: #9E6B30;       /* 赭黃/古銅色（用於卡片左側邊框與印章） */
+  --brass-light: #CBB080; /* 淡金褐色（用於裝飾線與強調標籤） */
+  
+  --red: #A84335;         /* 暖赤紅（損益獲利） */
+  --green: #3A694B;       /* 森林綠（損益虧損） */
+  --line: #E2D9CF;        /* 砂岩分隔線 */
+  --muted: #7A6A5C;       /* 暖灰褐色 次要說明文字 */
+  
   --font-display: 'Noto Serif TC', serif;
   --font-body: 'Noto Sans TC', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -36,13 +40,10 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-/* ---------- header / cover ---------- */
-.cover{
-  background:linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
-  color:#EFE7D6;
-  padding:28px 20px 20px;
-  position:relative;
-  overflow:hidden;
+/* 頂部 Cover 漸層 */
+.cover {
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
+  color: #F7F3EC;
 }
 .cover::after{
   content:"";
@@ -87,45 +88,26 @@ body{
   transform:rotate(-6deg);
 }
 
-/* ---------- tabs ---------- */
-.tabs{
-  background:var(--navy);
-  border-top:1px solid rgba(255,255,255,0.08);
-  overflow-x:auto;
-  white-space:nowrap;
-  scrollbar-width:none;
-}
-.tabs::-webkit-scrollbar{display:none;}
-.tabs-inner{
-  max-width:1040px;
-  margin:0 auto;
-  display:flex;
-}
-.tab-btn{
-  background:none;
-  border:none;
-  color:#9CA3B5;
-  font-family:var(--font-body);
-  font-weight:500;
-  font-size:14px;
-  padding:14px 18px;
-  cursor:pointer;
-  border-bottom:3px solid transparent;
-  white-space:nowrap;
-  display:flex;
-  align-items:baseline;
-  gap:6px;
-}
-.tab-btn .num{
-  font-family:var(--font-mono);
-  font-size:12px;
-  color:var(--brass-light);
-}
-.tab-btn.active{
-  color:#F5EFDF;
-  border-bottom-color:var(--brass-light);
+/* 頁籤選單列 */
+.tabs {
+  background: var(--navy);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.tab-btn {
+  color: #C2B4A5;
+}
+
+.tab-btn.active {
+  color: #FFFDF9;
+  border-bottom-color: var(--brass-light);
+}
+
+/* 總覽「全部投入成本」大卡片 */
+.total-bar {
+  background: var(--navy);
+  color: #F7F3EC;
+}
 /* ---------- layout ---------- */
 main{
   max-width:1040px;
