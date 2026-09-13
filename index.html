@@ -37,6 +37,65 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
+/* ---------- 密碼驗證遮罩 ---------- */
+.auth-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--navy);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.auth-card {
+  background: var(--card);
+  border: 1px solid var(--brass);
+  border-radius: 6px;
+  padding: 30px 24px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 8px;
+}
+.auth-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.auth-field {
+  margin-bottom: 16px;
+}
+.auth-field input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  outline: none;
+}
+.auth-field input:focus {
+  border-color: var(--navy);
+  outline: 2px solid var(--brass-light);
+}
+.auth-error {
+  color: var(--red);
+  font-size: 12.5px;
+  margin-top: 8px;
+  display: none;
+  font-weight: 500;
+}
+
 /* ---------- header / cover ---------- */
 .cover{
   background:linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
@@ -266,6 +325,13 @@ main{
 }
 .total-bar .metric-value{font-family:var(--font-mono);font-size:22px;font-weight:600;}
 
+/* 個人總資產專用看板：淺棕底色 */
+.total-bar-light {
+  background: #dbcdbf !important;
+  border: 1px solid var(--line);
+  color: var(--ink) !important;
+}
+
 .gain{color:var(--red);}
 .loss{color:var(--green);}
 .flat{color:var(--muted);}
@@ -445,6 +511,20 @@ tbody tr:hover{background:#F9F6EE;}
   text-align: center;
 }
 
+/* 扁平化輸入框（數字左至右對齊） */
+.slim-input {
+  height: 30px !important;
+  padding: 2px 8px !important;
+  font-family: var(--font-mono) !important;
+  text-align: left !important;
+  width: 140px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 15px !important;
+}
+
 .toast{
   position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
   background:var(--navy);color:#F0EAD9;
@@ -467,6 +547,21 @@ tbody tr:hover{background:#F9F6EE;}
 </style>
 </head>
 <body>
+
+<!-- 密碼驗證遮罩介面 -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-title">資產紀錄系統</div>
+    <div class="auth-desc">請輸入存取密碼以繼續查看</div>
+    <form id="authForm">
+      <div class="auth-field">
+        <input type="password" id="authPassword" placeholder="••••" required autofocus autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn" style="width:100%;">解鎖進入</button>
+      <div class="auth-error" id="authError">密碼錯誤，請重新輸入</div>
+    </form>
+  </div>
+</div>
 
 <header class="cover">
   <div class="cover-inner">
@@ -491,6 +586,39 @@ tbody tr:hover{background:#F9F6EE;}
 <div class="toast" id="toast"></div>
 
 <script>
+/* ================= 密碼驗證設定 ================= */
+const SITE_PASSWORD = "0520"; 
+
+function checkAuth() {
+  const isAuth = sessionStorage.getItem('is_authenticated');
+  const overlay = document.getElementById('authOverlay');
+  
+  if (isAuth === 'true') {
+    overlay.style.display = 'none';
+    return true;
+  } else {
+    overlay.style.display = 'flex';
+    return false;
+  }
+}
+
+document.getElementById('authForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const pwdInput = document.getElementById('authPassword');
+  const errorMsg = document.getElementById('authError');
+  
+  if (pwdInput.value === SITE_PASSWORD) {
+    sessionStorage.setItem('is_authenticated', 'true');
+    document.getElementById('authOverlay').style.display = 'none';
+    errorMsg.style.display = 'none';
+    initApp();
+  } else {
+    errorMsg.style.display = 'block';
+    pwdInput.value = '';
+    pwdInput.focus();
+  }
+});
+
 /* ================= Google Sheets API Setup ================= */
 const API_URL = "https://script.google.com/macros/s/AKfycbzT8rvsYlbJtT2FakIZxGgphf5gDgM9rqietzRAV9DueZN7b5hWt-BhVoXzWf67c68Yyg/exec"; 
 
@@ -526,12 +654,18 @@ let state={
     stockAmount: 0, stockTargetPct: 70
   },
 
-  activeTab:'s01',
+  activeTab:'a00',
   personalHolder:null
 };
 
+const ASSET_SUB_TABS=[
+  {id:'a00',label:'01｜個人總資產'},
+  {id:'a01',label:'02｜資產配置'},
+  {id:'a02',label:'03｜可用資金 & 代管'}
+];
+
 const STOCK_SUB_TABS=[
-  {id:'s01',label:'01｜總覽'},
+  {id:'s01',label:'01｜股票總覽'},
   {id:'s02',label:'02｜交易明細'},
   {id:'s03',label:'03｜持股總表'},
   {id:'s04',label:'04｜個人持股'},
@@ -546,11 +680,6 @@ const GOLD_SUB_TABS=[
   {id:'g04',label:'04｜個人持金'},
   {id:'g05',label:'05｜黃金贈與'},
   {id:'g06',label:'06｜金價更新'}
-];
-
-const ASSET_SUB_TABS=[
-  {id:'a01',label:'01｜資產配置'},
-  {id:'a02',label:'02｜可用資金 & 代管'}
 ];
 
 /* ================= API 串接與儲存 ================= */
@@ -812,11 +941,23 @@ function computeGoldHolderSummary(holdings){
 /* ================= render: shell ================= */
 function renderTabs(){
   const el=document.getElementById('tabsInner');
+  const isAssetActive = state.activeTab.startsWith('a');
   const isStockActive = state.activeTab.startsWith('s');
   const isGoldActive = state.activeTab.startsWith('g');
-  const isAssetActive = state.activeTab.startsWith('a');
 
   el.innerHTML = `
+    <div class="nav-item">
+      <button class="tab-btn ${isAssetActive ? 'active' : ''}">
+        資產 ▾
+      </button>
+      <div class="dropdown-menu">
+        ${ASSET_SUB_TABS.map(sub => `
+          <button class="${state.activeTab === sub.id ? 'active' : ''}" data-tab="${sub.id}">
+            ${sub.label}
+          </button>
+        `).join('')}
+      </div>
+    </div>
     <div class="nav-item">
       <button class="tab-btn ${isStockActive ? 'active' : ''}">
         股票 ▾
@@ -841,18 +982,6 @@ function renderTabs(){
         `).join('')}
       </div>
     </div>
-    <div class="nav-item">
-      <button class="tab-btn ${isAssetActive ? 'active' : ''}">
-        資產 ▾
-      </button>
-      <div class="dropdown-menu">
-        ${ASSET_SUB_TABS.map(sub => `
-          <button class="${state.activeTab === sub.id ? 'active' : ''}" data-tab="${sub.id}">
-            ${sub.label}
-          </button>
-        `).join('')}
-      </div>
-    </div>
   `;
 
   el.querySelectorAll('[data-tab]').forEach(btn=>{
@@ -868,8 +997,12 @@ function renderActive(){
   document.getElementById('holderListSub').textContent = state.holders.join('・');
   const app=document.getElementById('app');
   
+  // 資產
+  if(state.activeTab==='a00') app.innerHTML = renderPersonalTotalAsset();
+  else if(state.activeTab==='a01') app.innerHTML = renderAllocation();
+  else if(state.activeTab==='a02') app.innerHTML = renderStockCashflow();
   // 股票
-  if(state.activeTab==='s01') app.innerHTML = renderStockOverview();
+  else if(state.activeTab==='s01') app.innerHTML = renderStockOverview();
   else if(state.activeTab==='s02') app.innerHTML = renderStockTransactions();
   else if(state.activeTab==='s03') app.innerHTML = renderStockHoldings();
   else if(state.activeTab==='s04') app.innerHTML = renderStockPersonal();
@@ -882,19 +1015,65 @@ function renderActive(){
   else if(state.activeTab==='g04') app.innerHTML = renderGoldPersonal();
   else if(state.activeTab==='g05') app.innerHTML = renderGoldGifts();
   else if(state.activeTab==='g06') app.innerHTML = renderGoldPriceUpdate();
-  // 資產
-  else if(state.activeTab==='a01') app.innerHTML = renderAllocation();
-  else if(state.activeTab==='a02') app.innerHTML = renderStockCashflow();
 
   bindActiveEvents();
+}
+
+/* ================= a00 個人總資產 ================= */
+function renderPersonalTotalAsset(){
+  const stockHoldings = computeHoldings();
+  const stockSummary = computeHolderSummary(stockHoldings).find(s=>s.holder==='本人') || 
+    {investedCost:0, marketValue:0, unrealized:0, realizedPnl:0, totalPnl:0};
+    
+  const goldHoldings = computeGoldHoldings();
+  const goldSummary = computeGoldHolderSummary(goldHoldings).find(s=>s.holder==='本人') || 
+    {investedCost:0, marketValue:0, unrealized:0, realizedPnl:0, totalPnl:0};
+
+  const savedCash = Number(state.allocationConfig.cashAmount) || 0;
+
+  const totalStockMarket = stockSummary.marketValue;
+  const totalGoldMarket = goldSummary.marketValue;
+  const grandTotal = totalStockMarket + totalGoldMarket + savedCash;
+
+  const totalCost = stockSummary.investedCost + goldSummary.investedCost;
+  const totalMarket = totalStockMarket + totalGoldMarket;
+  const totalUnrealized = stockSummary.unrealized + goldSummary.unrealized;
+  const totalRealized = stockSummary.realizedPnl + goldSummary.realizedPnl;
+  const totalPnl = totalUnrealized + totalRealized;
+  const totalReturnPct = totalCost > 0 ? (totalUnrealized / totalCost * 100) : 0;
+
+  return `
+    <p class="section-title">01｜個人總資產</p>
+    <p class="section-desc">彙整股票、黃金與現金，計算個人整體總資產概況。</p>
+
+    <div class="total-bar total-bar-light" style="flex-direction:column; align-items:flex-start; gap:12px;">
+      <div style="font-size:16px; font-weight:600; font-family:var(--font-mono); color:var(--ink); word-break:break-all; display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+        <span>股票 ${fmtMoney(totalStockMarket)} + 黃金 ${fmtMoney(totalGoldMarket)} + 現金 NT$&nbsp;</span>
+        <input type="number" id="input_cash_manual" class="slim-input" placeholder="0" value="${savedCash > 0 ? savedCash : ''}" min="0" step="1">
+        <span> = <b style="color:var(--red);">總資產 <span id="display_grand_total">${fmtMoney(grandTotal)}</span></b></span>
+      </div>
+      <div style="margin-top:4px;">
+        <button class="btn" id="btn_save_cash_manual" style="padding:6px 16px; font-size:13.5px;">儲存金額</button>
+      </div>
+    </div>
+
+    <div class="card holder-card" style="max-width:500px; margin-bottom:20px;">
+      <p class="holder-name">資產綜合概況</p>
+      <div class="metric-row"><span class="label">投入成本</span><span class="value">${fmtMoney(totalCost)}</span></div>
+      <div class="metric-row"><span class="label">目前市值</span><span class="value">${fmtMoney(totalMarket)}</span></div>
+      <div class="metric-row"><span class="label">未實現損益</span><span class="value ${pnlClass(totalUnrealized)}">${fmtMoney(totalUnrealized)}</span></div>
+      <div class="metric-row"><span class="label">已實現損益</span><span class="value ${pnlClass(totalRealized)}">${fmtMoney(totalRealized)}</span></div>
+      <div class="metric-row"><span class="label">報酬率</span><span class="value ${pnlClass(totalReturnPct)}">${fmtPct(totalReturnPct)}</span></div>
+    </div>
+  `;
 }
 
 /* ================= a01 資產配置 ================= */
 function renderAllocation(){
   const cfg = state.allocationConfig;
-  const cash = Number(cfg.cashAmount)||0;
-  const gold = Number(cfg.goldAmount)||0;
-  const stock = Number(cfg.stockAmount)||0;
+  const cash = Math.round(Number(cfg.cashAmount)||0);
+  const gold = Math.round(Number(cfg.goldAmount)||0);
+  const stock = Math.round(Number(cfg.stockAmount)||0);
   
   const total = cash + gold + stock;
   
@@ -918,7 +1097,7 @@ function renderAllocation(){
   const stockDiff = stockTargetAmt - stock;
 
   return `
-    <p class="section-title">01｜資產配置</p>
+    <p class="section-title">02｜資產配置</p>
     <p class="section-desc">填寫資產金額與期望目標比例，系統會計算資產總額與再平衡建議。</p>
 
     <div class="total-bar">
@@ -1390,7 +1569,7 @@ function renderStockCashflow(){
     </tr>`).join('');
 
   return `
-    <p class="section-title">02｜可用資金 / 代管</p>
+    <p class="section-title">03｜可用資金 / 代管</p>
     <p class="section-desc">自動彙整「資金進出 + 買賣扣除/回收」，顯示閒置可用現金。</p>
 
     <div class="grid grid-4" style="margin-bottom:20px;">${balanceCards}</div>
@@ -1680,7 +1859,6 @@ function renderGoldPersonal(){
 
 /* ================= 黃金 g05 黃金贈與 ================= */
 function renderGoldGifts(){
-  // 在選單最後加入「其他」選項
   const holderOptionsWithOther = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('') + `<option value="其他">其他</option>`;
   const rows = sortByLatestDate(state.goldGifts);
 
@@ -1755,6 +1933,48 @@ function renderGoldGifts(){
 
 /* ================= events ================= */
 function bindActiveEvents(){
+  // a00 手動輸入現金 - 即時計算與儲存邏輯
+  const inputCashManual = document.getElementById('input_cash_manual');
+  const displayGrandTotal = document.getElementById('display_grand_total');
+  
+  if(inputCashManual && displayGrandTotal){
+    const stockSummary = computeHolderSummary(computeHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+    const goldSummary = computeGoldHolderSummary(computeGoldHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+    const baseStockGold = stockSummary.marketValue + goldSummary.marketValue;
+
+    // 即時計算總資產
+    inputCashManual.addEventListener('input', ()=>{
+      const currentInputCash = Number(inputCashManual.value) || 0;
+      displayGrandTotal.textContent = fmtMoney(baseStockGold + currentInputCash);
+    });
+  }
+
+  const btnSaveCashManual = document.getElementById('btn_save_cash_manual');
+  if(btnSaveCashManual && inputCashManual){
+    btnSaveCashManual.addEventListener('click', async ()=>{
+      const rawValue = inputCashManual.value.trim();
+      const inputCashNum = Number(rawValue) || 0;
+
+      const stockSummary = computeHolderSummary(computeHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+      const goldSummary = computeGoldHolderSummary(computeGoldHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+
+      // 更新最新股票與黃金市值至資產配置
+      state.allocationConfig.stockAmount = stockSummary.marketValue;
+      state.allocationConfig.goldAmount = goldSummary.marketValue;
+
+      // 若有輸入且大於 0，才更新資產配置的現金欄位
+      if(rawValue !== '' && inputCashNum > 0){
+        state.allocationConfig.cashAmount = inputCashNum;
+        showToast('現金金額已更新並同步至資產配置！');
+      } else {
+        showToast('已將最新股票與黃金市值更新至資產配置！');
+      }
+
+      renderActive();
+      await saveToGoogleSheet();
+    });
+  }
+
   // 資產配置防呆即時計算
   document.querySelectorAll('.alloc-pct-input').forEach(input => {
     input.addEventListener('input', () => {
@@ -2064,12 +2284,16 @@ function bindActiveEvents(){
 }
 
 /* ================= init ================= */
-async function init(){
+async function initApp(){
   renderTabs();
   await fetchFromGoogleSheet();
   renderActive();
 }
-init();
+
+// 頁面開啟時先檢查驗證狀態
+if (checkAuth()) {
+  initApp();
+}
 </script>
 </body>
 </html>
