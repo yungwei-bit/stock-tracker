@@ -648,9 +648,12 @@ function fmtMoney(n){
   n = Math.round(n||0);
   return (n<0?'-':'')+'NT$'+Math.abs(n).toLocaleString('zh-Hant-TW');
 }
-function fmtNum(n,d=0){
-  n = n||0;
-  return n.toLocaleString('zh-Hant-TW',{minimumFractionDigits:d,maximumFractionDigits:d});
+function fmtNum(n, maxDigits=3){
+  n = Number(n)||0;
+  return n.toLocaleString('zh-Hant-TW', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: maxDigits
+  });
 }
 function fmtWeight(n){
   n = Number(n)||0;
@@ -1018,7 +1021,7 @@ function renderStockPriceUpdate(){
       <td class="txt">${codeStr}</td>
       <td class="txt">${name}</td>
       <td>
-        <input type="number" class="price-input" data-stock-price-code="${codeStr}" value="${price.toFixed(2)}" step="0.01">
+        <input type="number" class="price-input" data-stock-price-code="${codeStr}" value="${fmtNum(price, 3)}" step="0.001">
       </td>
     </tr>`;
   }).join('');
@@ -1065,7 +1068,7 @@ function renderStockTransactions(){
       <td class="txt">${t.name}</td>
       <td><span class="pill ${t.action==='buy'?'buy':'sell'}">${t.action==='buy'?'買進':'賣出'}</span></td>
       <td>${fmtNum(t.shares)}</td>
-      <td>${fmtNum(t.price,3)}</td>
+      <td>${fmtNum(t.price)}</td>
       <td>${fmtNum(t.fee,0)}</td>
       <td class="txt">${t.note||''}</td>
       <td><button class="icon-btn" data-del-tx="${t.id}" title="刪除">✕</button></td>
@@ -1130,8 +1133,8 @@ function renderStockHoldings(){
       <td class="txt">${fmtStockCode(h.code)}</td>
       <td class="txt">${h.name}</td>
       <td>${fmtNum(h.shares)}</td>
-      <td>${fmtNum(avgCost,2)}</td>
-      <td>${fmtNum(price,2)}</td>
+      <td>${fmtNum(avgCost)}</td>
+      <td>${fmtNum(price)}</td>
       <td>${fmtMoney(marketValue)}</td>
       <td class="${pnlClass(unrealized)}">${fmtMoney(unrealized)}</td>
       <td class="${pnlClass(pct)}">${fmtPct(pct)}</td>
@@ -1180,8 +1183,8 @@ function renderStockPersonal(){
     return `<tr>
       <td class="txt">${fmtStockCode(h.code)}</td><td class="txt">${h.name}</td>
       <td>${fmtNum(h.shares)}</td>
-      <td>${fmtNum(avgCost,2)}</td>
-      <td>${fmtNum(price,2)}</td>
+      <td>${fmtNum(avgCost)}</td>
+      <td>${fmtNum(price)}</td>
       <td>${fmtMoney(marketValue)}</td>
       <td class="${pnlClass(unrealized)}">${fmtMoney(unrealized)}</td>
     </tr>`;
@@ -1192,7 +1195,7 @@ function renderStockPersonal(){
     <tr>
       <td class="txt">${displayDateOnly(t)}</td><td class="txt">${fmtStockCode(t.code)}</td><td class="txt">${t.name}</td>
       <td><span class="pill ${t.action==='buy'?'buy':'sell'}">${t.action==='buy'?'買進':'賣出'}</span></td>
-      <td>${fmtNum(t.shares)}</td><td>${fmtNum(t.price,3)}</td>
+      <td>${fmtNum(t.shares)}</td><td>${fmtNum(t.price)}</td>
     </tr>`).join('');
 
   return `
