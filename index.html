@@ -1,1 +1,2299 @@
-..
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>資產紀錄</title>
+<link rel="icon" href="app.jpg" type="image/jpeg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --paper: #EFEAE0;
+  --card: #FFFDF8;
+  --ink: #2D2721;
+  --navy: #5C4033;
+  --navy-light: #7A5745;
+  --brass: #d6b784;
+  --brass-light: #c2a571;
+  --red: #ed4d3b;
+  --green: #51a882;
+  --line: #D9D0BC;
+  --muted: #736C5E;
+  --btn-disabled: #D5C4AF;
+  --font-display: 'Noto Serif TC', serif;
+  --font-body: 'Noto Sans TC', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper); 
+  color:var(--ink);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- 密碼驗證遮罩 ---------- */
+.auth-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--navy);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.auth-card {
+  background: var(--card);
+  border: 1px solid var(--brass);
+  border-radius: 6px;
+  padding: 30px 24px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 8px;
+}
+.auth-desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+.auth-field {
+  margin-bottom: 16px;
+}
+.auth-field input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  text-align: center;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  outline: none;
+}
+.auth-field input:focus {
+  border-color: var(--navy);
+  outline: 2px solid var(--brass-light);
+}
+.auth-error {
+  color: var(--red);
+  font-size: 12.5px;
+  margin-top: 8px;
+  display: none;
+  font-weight: 500;
+}
+
+/* ---------- header / cover ---------- */
+.cover{
+  background:linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
+  color:#EFE7D6;
+  padding:28px 20px 20px;
+  position:relative;
+  overflow:hidden;
+}
+.cover-inner{
+  max-width:1040px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  position:relative;
+  z-index:1;
+}
+.cover-title{
+  font-family:var(--font-display);
+  font-weight:700;
+  font-size:26px;
+  letter-spacing:0.02em;
+  margin:0;
+}
+.cover-sub{
+  margin:6px 0 0;
+  font-size:13px;
+  color:#D1D5DB;
+  font-family:var(--font-mono);
+}
+.stamp-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.stamp-container::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 40px;
+  background-color: rgba(233,214,166,0.3);
+}
+.stamp{
+  width:56px;height:56px;
+  border-radius:50%;
+  border:2px solid var(--brass-light);
+  color:var(--brass-light);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);
+  font-size:20px;font-weight:700;
+  flex-shrink:0;
+  transform:rotate(-6deg);
+}
+
+/* ---------- tabs & dropdown ---------- */
+.tabs{
+  background:var(--navy);
+  border-top:1px solid rgba(255,255,255,0.08);
+  overflow-x:visible;
+  white-space:nowrap;
+}
+.tabs-inner{
+  max-width:1040px;
+  margin:0 auto;
+  display:flex;
+}
+.nav-item {
+  position: relative;
+}
+.tab-btn{
+  background:none;
+  border:none;
+  color:#E5E7EB;
+  font-family:var(--font-body);
+  font-weight:500;
+  font-size:14px;
+  padding:14px 18px;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  white-space:nowrap;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.tab-btn.active{
+  color:#F5EFDF;
+  border-bottom-color:var(--brass-light);
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: var(--navy);
+  min-width: 190px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.3);
+  z-index: 100;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0 0 4px 4px;
+}
+.dropdown-menu button {
+  color: #E5E7EB;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.dropdown-menu button:hover {
+  background-color: var(--navy-light);
+  color: #F5EFDF;
+}
+.dropdown-menu button.active {
+  color: var(--brass-light);
+  font-weight: bold;
+}
+.nav-item:hover .dropdown-menu {
+  display: block;
+}
+
+/* ---------- layout ---------- */
+main{
+  max-width:1040px;
+  margin:0 auto;
+  padding:24px 20px 60px;
+}
+.section-title{
+  font-family:var(--font-display);
+  font-size:20px;
+  font-weight:700;
+  margin:0 0 4px;
+  color:var(--navy);
+}
+.section-desc{
+  font-size:13px;
+  color:var(--muted);
+  margin:0 0 20px;
+}
+
+/* ---------- cards & grid ---------- */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brass);
+  border-radius: 4px;
+  padding: 16px 18px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.grid-4 {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 12px !important;
+  width: 100%;
+}
+
+.grid-2 {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 12px !important;
+  width: 100%;
+}
+
+.holder-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.holder-card .holder-name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--navy);
+  margin: 0 0 10px;
+}
+
+.metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13.5px;
+  width: 100%;
+}
+
+.metric-row .label { color: var(--muted); }
+.metric-row .value { 
+  font-family: var(--font-mono); 
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media(max-width: 760px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+  .grid-2 { grid-template-columns: 1fr !important; }
+}
+
+.total-bar{
+  background:var(--navy);
+  color:#F0EAD9;
+  border-radius:4px;
+  padding:18px 20px;
+  margin-bottom:20px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:24px;
+  align-items:center;
+}
+.total-bar .metric-label{
+  color:#E5E7EB;
+  font-size:12px;
+  font-family:var(--font-mono);
+}
+.total-bar .metric-value{font-family:var(--font-mono);font-size:22px;font-weight:600;}
+
+/* 個人總資產專用看板：淺棕底色 */
+.total-bar-light {
+  background: #dbcdbf !important;
+  border: 1px solid var(--line);
+  color: var(--ink) !important;
+}
+
+.gain{color:var(--red);}
+.loss{color:var(--green);}
+.flat{color:var(--muted);}
+
+/* ---------- 表格與容器 ---------- */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--card);
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  min-width: 700px;
+}
+
+thead th, tbody td {
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.table-center thead th, 
+.table-center tbody td {
+  text-align: center !important;
+}
+
+tbody td.txt{font-family:var(--font-body);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#F9F6EE;}
+.num-col{text-align:right;}
+
+.pill{
+  display:inline-block;
+  padding:2px 9px;
+  border-radius:20px;
+  font-size:12px;
+  font-family:var(--font-body);
+  font-weight:500;
+  background:#EFE7D2;
+  color:var(--navy);
+}
+.pill.sell{background:#EADAD6;color:var(--red);}
+.pill.buy{background:#DCE7DF;color:var(--green);}
+
+.icon-btn{
+  border:none;background:none;cursor:pointer;
+  color:var(--muted);font-size:15px;
+  padding:2px 6px;
+}
+.icon-btn:hover{color:var(--red);}
+
+/* ---------- forms ---------- */
+.form-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:4px;
+  padding:18px;
+  margin-bottom:18px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media(max-width: 760px){
+  main { padding: 12px 10px 40px; }
+  .form-grid { grid-template-columns: 1fr !important; }
+  .field[style*="grid-column"] { grid-column: span 1 !important; }
+  .total-bar { gap: 12px; padding: 12px 14px; }
+  .total-bar .metric-value { font-size: 18px; }
+}
+
+.field input, .field select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--ink);
+  height: 40px;
+  margin: 0;
+}
+
+.field input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  display: block;
+  min-height: 40px;
+  line-height: 22px;
+  padding: 8px 10px;
+}
+
+.field select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%20242B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: calc(100% - 14px) center;
+  cursor: pointer;
+}
+
+.field input:focus, .field select:focus{outline:2px solid var(--brass-light);outline-offset:1px;}
+.form-actions {
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 9px 16px;
+  border-radius: 3px;
+  border: 1px solid var(--navy);
+  background: var(--navy);
+  color: #F0EAD9;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn:hover{background:var(--navy-light);}
+.btn:disabled, .btn.btn-disabled {
+  background-color: var(--btn-disabled) !important;
+  border-color: var(--btn-disabled) !important;
+  color: #FFF !important;
+  cursor: not-allowed !important;
+}
+
+.btn.secondary{background:transparent;color:var(--navy);}
+.hint{font-size:12px;color:var(--muted);}
+.hint.error{color:var(--red); font-weight: bold;}
+
+.holder-select{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.holder-select button{
+  font-family:var(--font-body);
+  font-size:13.5px;
+  padding:7px 16px;
+  border-radius:20px;
+  border:1px solid var(--line);
+  background:var(--card);
+  color:var(--ink);
+  cursor:pointer;
+}
+.holder-select button.active{
+  background:var(--navy);
+  color:#F0EAD9;
+  border-color:var(--navy);
+}
+
+.empty-state{
+  text-align:center;
+  padding:36px 20px;
+  color:var(--muted);
+  font-size:13.5px;
+}
+
+.price-input{
+  width:100px;
+  font-family:var(--font-mono);
+  padding:4px 6px;
+  border:1px solid var(--line);
+  border-radius:3px;
+  text-align: center;
+}
+
+/* 扁平化輸入框（數字左至右對齊） */
+.slim-input {
+  height: 30px !important;
+  padding: 2px 8px !important;
+  font-family: var(--font-mono) !important;
+  text-align: left !important;
+  width: 140px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 15px !important;
+}
+
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--navy);color:#F0EAD9;
+  padding:10px 20px;border-radius:4px;font-size:13.5px;
+  opacity:0;pointer-events:none;transition:opacity .25s;
+  z-index:50;
+}
+.toast.show{opacity:1;}
+
+.new-holder-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:18px;
+  align-items:center;
+  flex-wrap: wrap;
+}
+.new-holder-row input{
+  padding:7px 10px;border:1px solid var(--line);border-radius:3px;font-family:var(--font-body);font-size:13px;
+}
+</style>
+</head>
+<body>
+
+<!-- 密碼驗證遮罩介面 -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-card">
+    <div class="auth-title">資產紀錄系統</div>
+    <div class="auth-desc">請輸入存取密碼以繼續查看</div>
+    <form id="authForm">
+      <div class="auth-field">
+        <input type="password" id="authPassword" placeholder="••••" required autofocus autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn" style="width:100%;">解鎖進入</button>
+      <div class="auth-error" id="authError">密碼錯誤，請重新輸入</div>
+    </form>
+  </div>
+</div>
+
+<header class="cover">
+  <div class="cover-inner">
+    <div>
+      <p class="cover-title">資產紀錄</p>
+      <p class="cover-sub" id="holderListSub">本人・元智・媽媽・挖貴</p>
+    </div>
+    <div class="stamp-container">
+      <div class="stamp">帳</div>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="tabs-inner" id="tabsInner"></div>
+</nav>
+
+<main id="app">
+  <div class="empty-state">載入中…</div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= 密碼驗證設定 ================= */
+const SITE_PASSWORD = "0520"; 
+
+function checkAuth() {
+  const isAuth = sessionStorage.getItem('is_authenticated');
+  const overlay = document.getElementById('authOverlay');
+  
+  if (isAuth === 'true') {
+    overlay.style.display = 'none';
+    return true;
+  } else {
+    overlay.style.display = 'flex';
+    return false;
+  }
+}
+
+document.getElementById('authForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const pwdInput = document.getElementById('authPassword');
+  const errorMsg = document.getElementById('authError');
+  
+  if (pwdInput.value === SITE_PASSWORD) {
+    sessionStorage.setItem('is_authenticated', 'true');
+    document.getElementById('authOverlay').style.display = 'none';
+    errorMsg.style.display = 'none';
+    initApp();
+  } else {
+    errorMsg.style.display = 'block';
+    pwdInput.value = '';
+    pwdInput.focus();
+  }
+});
+
+/* ================= Google Sheets API Setup ================= */
+const API_URL = "https://script.google.com/macros/s/AKfycbzT8rvsYlbJtT2FakIZxGgphf5gDgM9rqietzRAV9DueZN7b5hWt-BhVoXzWf67c68Yyg/exec"; 
+
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+/* ================= state ================= */
+let state={
+  holders:['本人','元智','媽媽','挖貴'],
+  
+  // 股票資料
+  transactions:[], 
+  cashflow:[],     
+  gifts:[],        
+  prices:{},       
+  stocks:{'0050':'元大台灣50', '2330':'台積電'},
+  
+  // 黃金資料
+  goldPrices: {'ingot': 0, 'ornament': 0},
+  goldTransactions: [], 
+  goldGifts: [],        
+  
+  // 資產配置設定
+  allocationConfig: {
+    cashAmount: 0, cashTargetPct: 20,
+    goldAmount: 0, goldTargetPct: 10,
+    stockAmount: 0, stockTargetPct: 70
+  },
+
+  activeTab:'a00',
+  personalHolder:null
+};
+
+const ASSET_SUB_TABS=[
+  {id:'a00',label:'01｜個人總資產'},
+  {id:'a01',label:'02｜資產配置'},
+  {id:'a02',label:'03｜可用資金 & 代管'}
+];
+
+const STOCK_SUB_TABS=[
+  {id:'s01',label:'01｜股票總覽'},
+  {id:'s02',label:'02｜交易明細'},
+  {id:'s03',label:'03｜持股總表'},
+  {id:'s04',label:'04｜個人持股'},
+  {id:'s05',label:'05｜股票贈與 & 劃撥'},
+  {id:'s06',label:'06｜股價更新'}
+];
+
+const GOLD_SUB_TABS=[
+  {id:'g01',label:'01｜黃金總覽'},
+  {id:'g02',label:'02｜交易明細'},
+  {id:'g03',label:'03｜持金總表'},
+  {id:'g04',label:'04｜個人持金'},
+  {id:'g05',label:'05｜黃金贈與'},
+  {id:'g06',label:'06｜金價更新'}
+];
+
+/* ================= API 串接與儲存 ================= */
+function fmtStockCode(code){
+  if(!code) return '';
+  const str = String(code).trim();
+  return /^\d+$/.test(str) ? str.padStart(4, '0') : str;
+}
+
+async function fetchFromGoogleSheet(){
+  try{
+    showToast('連線中，載入雲端資料...');
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    
+    if(data){
+      if(data.holders && data.holders.length > 0) {
+        state.holders = data.holders.map(h => typeof h === 'object' ? String(h.name || h[0]) : String(h));
+      }
+      state.transactions = (data.transactions || []).map(t => ({...t, code: fmtStockCode(t.code)}));
+      state.cashflow = data.cashflow || [];
+      state.gifts = (data.gifts || []).map(g => ({...g, code: fmtStockCode(g.code)}));
+      
+      state.prices = {};
+      if(data.prices){
+        Object.keys(data.prices).forEach(k => { state.prices[fmtStockCode(k)] = data.prices[k]; });
+      }
+      
+      if(data.stocks && Object.keys(data.stocks).length > 0) {
+        state.stocks = {};
+        Object.keys(data.stocks).forEach(k => { state.stocks[fmtStockCode(k)] = data.stocks[k]; });
+      }
+      
+      state.goldPrices = data.goldPrices || {'ingot': 0, 'ornament': 0};
+      state.goldTransactions = data.goldTransactions || [];
+      state.goldGifts = data.goldGifts || [];
+      if(data.allocationConfig) state.allocationConfig = {...state.allocationConfig, ...data.allocationConfig};
+    }
+  }catch(e){
+    console.error('Fetch Google Sheet Failed:', e);
+    showToast('雲端資料載入失敗，將使用預設畫面');
+  }
+}
+
+async function saveToGoogleSheet(){
+  try{
+    showToast('雲端同步儲存中...');
+    await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({
+        type: 'saveAll',
+        holders: state.holders,
+        transactions: state.transactions,
+        cashflow: state.cashflow,
+        gifts: state.gifts,
+        prices: state.prices,
+        stocks: state.stocks,
+        goldPrices: state.goldPrices,
+        goldTransactions: state.goldTransactions,
+        goldGifts: state.goldGifts,
+        allocationConfig: state.allocationConfig
+      })
+    });
+    showToast('已同步儲存至 Google 試算表！');
+  }catch(e){
+    console.error('Save Google Sheet Failed:', e);
+    showToast('儲存失敗，請檢查網路連線');
+  }
+}
+
+/* ================= formatting & helpers ================= */
+function displayDateOnly(item){
+  let rawDate = String(item.date || '').trim();
+  if(rawDate.includes('T')){
+    rawDate = rawDate.split('T')[0];
+  } else if(rawDate.length > 10){
+    rawDate = rawDate.substring(0, 10);
+  }
+  return rawDate || todayStr();
+}
+
+function sortByLatestDate(list){
+  return [...list].sort((a,b)=>{
+    const dateA = String(a.date || '').substring(0, 10);
+    const dateB = String(b.date || '').substring(0, 10);
+    if(dateA !== dateB){
+      return dateB.localeCompare(dateA);
+    }
+    return (b.id || '').localeCompare(a.id || '');
+  });
+}
+
+function fmtMoney(n){
+  n = Math.round(n||0);
+  return (n<0?'-':'')+'NT$'+Math.abs(n).toLocaleString('zh-Hant-TW');
+}
+function fmtNum(n, maxDigits=3){
+  n = Number(n)||0;
+  return n.toLocaleString('zh-Hant-TW', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: maxDigits
+  });
+}
+function fmtWeight(n){
+  n = Number(n)||0;
+  const str = n.toFixed(3).replace(/\.?0+$/, '');
+  return str || '0';
+}
+function fmtPct(n){
+  if(!isFinite(n)) return '—';
+  return (n>=0?'+':'')+n.toFixed(1)+'%';
+}
+function pnlClass(n){ return n>0?'gain':(n<0?'loss':'flat'); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function uid(){ return 'id_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+
+/* ================= 股票與黃金計算邏輯 ================= */
+function computeHoldings(){
+  const txList = state.transactions.map(t=>({
+    type: 'tx', date: t.date, holder: t.holder, code: fmtStockCode(t.code), name: t.name,
+    action: t.action, shares: Number(t.shares)||0, price: Number(t.price)||0, fee: Number(t.fee)||0
+  }));
+
+  const giftList = [];
+  for(const g of state.gifts){
+    const shares = Number(g.shares)||0;
+    const cCode = fmtStockCode(g.code);
+    giftList.push({ type: 'gift_out', date: g.date, holder: g.from, code: cCode, name: g.name, action: 'sell', shares: shares, price: 0, fee: 0 });
+    giftList.push({ type: 'gift_in', date: g.date, holder: g.to, code: cCode, name: g.name, action: 'buy', shares: shares, price: 0, fee: 0 });
+  }
+
+  const allEvents = [...txList, ...giftList].sort((a,b)=> String(a.date||'').localeCompare(String(b.date||'')));
+
+  const map={}; 
+  for(const e of allEvents){
+    const key=e.holder+'|'+e.code;
+    if(!map[key]) map[key]={holder:e.holder,code:e.code,name:e.name,shares:0,costBasis:0,realizedPnl:0};
+    const h=map[key];
+    h.name=e.name||h.name;
+    const shares=e.shares;
+    const price=e.price;
+    const fee=e.fee;
+
+    if(e.action==='buy'){
+      if(e.type === 'gift_in'){
+        const currentAvg = h.shares > 0 ? h.costBasis / h.shares : 0;
+        h.costBasis += shares * currentAvg;
+        h.shares += shares;
+      } else {
+        h.costBasis += shares*price + fee;
+        h.shares += shares;
+      }
+    }else{ 
+      const avgCost = h.shares>0 ? h.costBasis/h.shares : 0;
+      const sellShares = Math.min(shares, h.shares>0?h.shares:shares);
+      
+      if(e.type === 'gift_out'){
+        h.costBasis -= sellShares*avgCost;
+        h.shares -= shares;
+      } else {
+        const proceeds = shares*price - fee;
+        h.realizedPnl += proceeds - sellShares*avgCost;
+        h.costBasis -= sellShares*avgCost;
+        h.shares -= shares;
+      }
+
+      if(h.shares<0.0001) { h.shares=Math.max(h.shares,0); }
+      if(h.shares<=0){ h.costBasis=0; h.shares=0; }
+    }
+  }
+  return Object.values(map);
+}
+
+function computeHolderSummary(holdings){
+  const byHolder={};
+  for(const h of holdings){
+    if(!byHolder[h.holder]) byHolder[h.holder]={holder:h.holder,investedCost:0,marketValue:0,realizedPnl:0};
+    const price = state.prices[h.code]!=null ? Number(state.prices[h.code]) : (h.shares>0 ? h.costBasis/h.shares : 0);
+    byHolder[h.holder].investedCost += h.costBasis;
+    byHolder[h.holder].marketValue += h.shares*price;
+    byHolder[h.holder].realizedPnl += h.realizedPnl;
+  }
+  return Object.values(byHolder).map(s=>{
+    const unrealized = s.marketValue - s.investedCost;
+    return {...s, unrealized, totalPnl: unrealized+s.realizedPnl, returnPct: s.investedCost>0 ? (unrealized/s.investedCost*100) : 0};
+  });
+}
+
+function computeGoldHoldings(){
+  const txList = state.goldTransactions.map(t=>({
+    type: 'tx', date: t.date, holder: t.holder, itemType: t.type,
+    action: t.action, weight: Number(t.weight)||0, price: Number(t.price)||0, fee: Number(t.fee)||0
+  }));
+
+  const giftList = [];
+  for(const g of state.goldGifts){
+    const w = Number(g.weight)||0;
+    giftList.push({ type: 'gift_out', date: g.date, holder: g.from, itemType: g.type, action: 'sell', weight: w, price: 0, fee: 0 });
+    giftList.push({ type: 'gift_in', date: g.date, holder: g.to, itemType: g.type, action: 'buy', weight: w, price: 0, fee: 0 });
+  }
+
+  const allEvents = [...txList, ...giftList].sort((a,b)=> String(a.date||'').localeCompare(String(b.date||'')));
+
+  const map={}; 
+  for(const e of allEvents){
+    const key=e.holder+'|'+e.itemType;
+    if(!map[key]) map[key]={holder:e.holder,itemType:e.itemType,weight:0,costBasis:0,realizedPnl:0};
+    const h=map[key];
+    const w=e.weight;
+    const price=e.price;
+    const fee=e.fee;
+
+    if(e.action==='buy'){
+      if(e.type === 'gift_in'){
+        const currentAvg = h.weight > 0 ? h.costBasis / h.weight : 0;
+        h.costBasis += w * currentAvg;
+        h.weight += w;
+      } else {
+        h.costBasis += w*price + fee;
+        h.weight += w;
+      }
+    }else{ 
+      const avgCost = h.weight>0 ? h.costBasis/h.weight : 0;
+      const sellW = Math.min(w, h.weight>0?h.weight:w);
+      
+      if(e.type === 'gift_out'){
+        h.costBasis -= sellW*avgCost;
+        h.weight -= w;
+      } else {
+        const proceeds = w*price - fee;
+        h.realizedPnl += proceeds - sellW*avgCost;
+        h.costBasis -= sellW*avgCost;
+        h.weight -= w;
+      }
+
+      if(h.weight<0.0001) { h.weight=Math.max(h.weight,0); }
+      if(h.weight<=0){ h.costBasis=0; h.shares=0; }
+    }
+  }
+  return Object.values(map);
+}
+
+function computeGoldHolderSummary(holdings){
+  const byHolder={};
+  for(const h of holdings){
+    if(!byHolder[h.holder]) byHolder[h.holder]={holder:h.holder,investedCost:0,marketValue:0,realizedPnl:0};
+    const currentPrice = state.goldPrices[h.itemType] != null ? Number(state.goldPrices[h.itemType]) : (h.weight>0 ? h.costBasis/h.weight : 0);
+    byHolder[h.holder].investedCost += h.costBasis;
+    byHolder[h.holder].marketValue += h.weight * currentPrice;
+    byHolder[h.holder].realizedPnl += h.realizedPnl;
+  }
+  return Object.values(byHolder).map(s=>{
+    const unrealized = s.marketValue - s.investedCost;
+    return {...s, unrealized, totalPnl: unrealized+s.realizedPnl, returnPct: s.investedCost>0 ? (unrealized/s.investedCost*100) : 0};
+  });
+}
+
+/* ================= render: shell ================= */
+function renderTabs(){
+  const el=document.getElementById('tabsInner');
+  const isAssetActive = state.activeTab.startsWith('a');
+  const isStockActive = state.activeTab.startsWith('s');
+  const isGoldActive = state.activeTab.startsWith('g');
+
+  el.innerHTML = `
+    <div class="nav-item">
+      <button class="tab-btn ${isAssetActive ? 'active' : ''}">
+        資產 ▾
+      </button>
+      <div class="dropdown-menu">
+        ${ASSET_SUB_TABS.map(sub => `
+          <button class="${state.activeTab === sub.id ? 'active' : ''}" data-tab="${sub.id}">
+            ${sub.label}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="tab-btn ${isStockActive ? 'active' : ''}">
+        股票 ▾
+      </button>
+      <div class="dropdown-menu">
+        ${STOCK_SUB_TABS.map(sub => `
+          <button class="${state.activeTab === sub.id ? 'active' : ''}" data-tab="${sub.id}">
+            ${sub.label}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+    <div class="nav-item">
+      <button class="tab-btn ${isGoldActive ? 'active' : ''}">
+        黃金 ▾
+      </button>
+      <div class="dropdown-menu">
+        ${GOLD_SUB_TABS.map(sub => `
+          <button class="${state.activeTab === sub.id ? 'active' : ''}" data-tab="${sub.id}">
+            ${sub.label}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+
+  el.querySelectorAll('[data-tab]').forEach(btn=>{
+    btn.addEventListener('click',(e)=>{
+      state.activeTab=btn.dataset.tab;
+      renderTabs();
+      renderActive();
+    });
+  });
+}
+
+function renderActive(){
+  document.getElementById('holderListSub').textContent = state.holders.join('・');
+  const app=document.getElementById('app');
+  
+  // 資產
+  if(state.activeTab==='a00') app.innerHTML = renderPersonalTotalAsset();
+  else if(state.activeTab==='a01') app.innerHTML = renderAllocation();
+  else if(state.activeTab==='a02') app.innerHTML = renderStockCashflow();
+  // 股票
+  else if(state.activeTab==='s01') app.innerHTML = renderStockOverview();
+  else if(state.activeTab==='s02') app.innerHTML = renderStockTransactions();
+  else if(state.activeTab==='s03') app.innerHTML = renderStockHoldings();
+  else if(state.activeTab==='s04') app.innerHTML = renderStockPersonal();
+  else if(state.activeTab==='s05') app.innerHTML = renderStockGifts();
+  else if(state.activeTab==='s06') app.innerHTML = renderStockPriceUpdate();
+  // 黃金
+  else if(state.activeTab==='g01') app.innerHTML = renderGoldOverview();
+  else if(state.activeTab==='g02') app.innerHTML = renderGoldTransactions();
+  else if(state.activeTab==='g03') app.innerHTML = renderGoldHoldings();
+  else if(state.activeTab==='g04') app.innerHTML = renderGoldPersonal();
+  else if(state.activeTab==='g05') app.innerHTML = renderGoldGifts();
+  else if(state.activeTab==='g06') app.innerHTML = renderGoldPriceUpdate();
+
+  bindActiveEvents();
+}
+
+/* ================= a00 個人總資產 ================= */
+function renderPersonalTotalAsset(){
+  const stockHoldings = computeHoldings();
+  const stockSummary = computeHolderSummary(stockHoldings).find(s=>s.holder==='本人') || 
+    {investedCost:0, marketValue:0, unrealized:0, realizedPnl:0, totalPnl:0};
+    
+  const goldHoldings = computeGoldHoldings();
+  const goldSummary = computeGoldHolderSummary(goldHoldings).find(s=>s.holder==='本人') || 
+    {investedCost:0, marketValue:0, unrealized:0, realizedPnl:0, totalPnl:0};
+
+  const savedCash = Number(state.allocationConfig.cashAmount) || 0;
+
+  const totalStockMarket = stockSummary.marketValue;
+  const totalGoldMarket = goldSummary.marketValue;
+  const grandTotal = totalStockMarket + totalGoldMarket + savedCash;
+
+  const totalCost = stockSummary.investedCost + goldSummary.investedCost;
+  const totalMarket = totalStockMarket + totalGoldMarket;
+  const totalUnrealized = stockSummary.unrealized + goldSummary.unrealized;
+  const totalRealized = stockSummary.realizedPnl + goldSummary.realizedPnl;
+  const totalPnl = totalUnrealized + totalRealized;
+  const totalReturnPct = totalCost > 0 ? (totalUnrealized / totalCost * 100) : 0;
+
+  return `
+    <p class="section-title">01｜個人總資產</p>
+    <p class="section-desc">彙整股票、黃金與現金，計算個人整體總資產概況。</p>
+
+    <div class="total-bar total-bar-light" style="flex-direction:column; align-items:flex-start; gap:12px;">
+      <div style="font-size:16px; font-weight:600; font-family:var(--font-mono); color:var(--ink); word-break:break-all; display:flex; align-items:center; flex-wrap:wrap; gap:6px;">
+        <span>股票 ${fmtMoney(totalStockMarket)} + 黃金 ${fmtMoney(totalGoldMarket)} + 現金 NT$&nbsp;</span>
+        <input type="number" id="input_cash_manual" class="slim-input" placeholder="0" value="${savedCash > 0 ? savedCash : ''}" min="0" step="1">
+        <span> = <b style="color:var(--red);">總資產 <span id="display_grand_total">${fmtMoney(grandTotal)}</span></b></span>
+      </div>
+      <div style="margin-top:4px;">
+        <button class="btn" id="btn_save_cash_manual" style="padding:6px 16px; font-size:13.5px;">儲存金額</button>
+      </div>
+    </div>
+
+    <div class="card holder-card" style="max-width:500px; margin-bottom:20px;">
+      <p class="holder-name">資產綜合概況</p>
+      <div class="metric-row"><span class="label">投入成本</span><span class="value">${fmtMoney(totalCost)}</span></div>
+      <div class="metric-row"><span class="label">目前市值</span><span class="value">${fmtMoney(totalMarket)}</span></div>
+      <div class="metric-row"><span class="label">未實現損益</span><span class="value ${pnlClass(totalUnrealized)}">${fmtMoney(totalUnrealized)}</span></div>
+      <div class="metric-row"><span class="label">已實現損益</span><span class="value ${pnlClass(totalRealized)}">${fmtMoney(totalRealized)}</span></div>
+      <div class="metric-row"><span class="label">報酬率</span><span class="value ${pnlClass(totalReturnPct)}">${fmtPct(totalReturnPct)}</span></div>
+    </div>
+  `;
+}
+
+/* ================= a01 資產配置 ================= */
+function renderAllocation(){
+  const cfg = state.allocationConfig;
+  const cash = Math.round(Number(cfg.cashAmount)||0);
+  const gold = Math.round(Number(cfg.goldAmount)||0);
+  const stock = Math.round(Number(cfg.stockAmount)||0);
+  
+  const total = cash + gold + stock;
+  
+  const cashPct = total > 0 ? (cash / total * 100) : 0;
+  const goldPct = total > 0 ? (gold / total * 100) : 0;
+  const stockPct = total > 0 ? (stock / total * 100) : 0;
+  
+  const cashTargetPct = Number(cfg.cashTargetPct)||0;
+  const goldTargetPct = Number(cfg.goldTargetPct)||0;
+  const stockTargetPct = Number(cfg.stockTargetPct)||0;
+
+  const totalTargetPct = cashTargetPct + goldTargetPct + stockTargetPct;
+  const isValid = (totalTargetPct === 100);
+
+  const cashTargetAmt = total * cashTargetPct / 100;
+  const goldTargetAmt = total * goldTargetPct / 100;
+  const stockTargetAmt = total * stockTargetPct / 100;
+
+  const cashDiff = cashTargetAmt - cash;
+  const goldDiff = goldTargetAmt - gold;
+  const stockDiff = stockTargetAmt - stock;
+
+  return `
+    <p class="section-title">02｜資產配置</p>
+    <p class="section-desc">填寫資產金額與期望目標比例，系統會計算資產總額與再平衡建議。</p>
+
+    <div class="total-bar">
+      <div><div class="metric-label">本人總資產</div><div class="metric-value ${pnlClass(total)}">${fmtMoney(total)}</div></div>
+    </div>
+
+    <div class="form-card">
+      <form id="allocForm">
+        <div class="table-wrap table-center" style="margin-bottom:14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>資產類別</th>
+                <th>目前金額 (NT$)</th>
+                <th>實際比例</th>
+                <th>目標比例 (%)</th>
+                <th>目標應有的金額</th>
+                <th>建議調整額</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="txt"><b>現金</b></td>
+                <td><input type="number" id="alloc_cash" value="${cash}" min="0" step="1" class="price-input" style="width:130px;"></td>
+                <td>${cashPct.toFixed(1)}%</td>
+                <td><input type="number" id="alloc_cash_pct" value="${cashTargetPct}" min="0" max="100" step="1" class="price-input alloc-pct-input" style="width:80px;">%</td>
+                <td>${fmtMoney(cashTargetAmt)}</td>
+                <td class="${pnlClass(cashDiff)}">${cashDiff >= 0 ? '增加 '+fmtMoney(cashDiff) : '減少 '+fmtMoney(Math.abs(cashDiff))}</td>
+              </tr>
+              <tr>
+                <td class="txt"><b>黃金</b></td>
+                <td><input type="number" id="alloc_gold" value="${gold}" min="0" step="1" class="price-input" style="width:130px;"></td>
+                <td>${goldPct.toFixed(1)}%</td>
+                <td><input type="number" id="alloc_gold_pct" value="${goldTargetPct}" min="0" max="100" step="1" class="price-input alloc-pct-input" style="width:80px;">%</td>
+                <td>${fmtMoney(goldTargetAmt)}</td>
+                <td class="${pnlClass(goldDiff)}">${goldDiff >= 0 ? '增加 '+fmtMoney(goldDiff) : '減少 '+fmtMoney(Math.abs(goldDiff))}</td>
+              </tr>
+              <tr>
+                <td class="txt"><b>股票</b></td>
+                <td><input type="number" id="alloc_stock" value="${stock}" min="0" step="1" class="price-input" style="width:130px;"></td>
+                <td>${stockPct.toFixed(1)}%</td>
+                <td><input type="number" id="alloc_stock_pct" value="${stockTargetPct}" min="0" max="100" step="1" class="price-input alloc-pct-input" style="width:80px;">%</td>
+                <td>${fmtMoney(stockTargetAmt)}</td>
+                <td class="${pnlClass(stockDiff)}">${stockDiff >= 0 ? '增加 '+fmtMoney(stockDiff) : '減少 '+fmtMoney(Math.abs(stockDiff))}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="form-actions">
+          <button type="submit" id="allocSubmitBtn" class="btn ${isValid ? '' : 'btn-disabled'}" ${isValid ? '' : 'disabled'}>更新資產配置數據</button>
+          <span class="hint ${isValid ? '' : 'error'}" id="allocHintMsg">
+            ${isValid ? '請確保目標比例加總為 100%' : `目標比例相加必須為 100%（目前：${totalTargetPct}%）`}
+          </span>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+/* ================= 股票 s01 總覽 ================= */
+function renderStockOverview(){
+  const holdings=computeHoldings();
+  const summaries=computeHolderSummary(holdings);
+  const totalInvested=summaries.reduce((s,x)=>s+x.investedCost,0);
+  const totalMarket=summaries.reduce((s,x)=>s+x.marketValue,0);
+  const totalPnl=summaries.reduce((s,x)=>s+x.totalPnl,0);
+
+  const cards = state.holders.map(name=>{
+    const s = summaries.find(x=>x.holder===name) || {investedCost:0,marketValue:0,unrealized:0,realizedPnl:0,totalPnl:0,returnPct:0};
+    return `
+    <div class="card holder-card">
+      <p class="holder-name">${name}</p>
+      <div class="metric-row"><span class="label">投入成本</span><span class="value">${fmtMoney(s.investedCost)}</span></div>
+      <div class="metric-row"><span class="label">目前市值</span><span class="value">${fmtMoney(s.marketValue)}</span></div>
+      <div class="metric-row"><span class="label">未實現損益</span><span class="value ${pnlClass(s.unrealized)}">${fmtMoney(s.unrealized)}</span></div>
+      <div class="metric-row"><span class="label">已實現損益</span><span class="value ${pnlClass(s.realizedPnl)}">${fmtMoney(s.realizedPnl)}</span></div>
+      <div class="metric-row"><span class="label">報酬率</span><span class="value ${pnlClass(s.returnPct)}">${fmtPct(s.returnPct)}</span></div>
+    </div>`;
+  }).join('');
+
+  return `
+    <p class="section-title">01｜股票總覽</p>
+    <p class="section-desc">顯示股票投入成本、目前市值、損益，以及全部資產合計。</p>
+    <div class="total-bar">
+      <div><div class="metric-label">全部投入成本</div><div class="metric-value">${fmtMoney(totalInvested)}</div></div>
+      <div><div class="metric-label">全部目前市值</div><div class="metric-value">${fmtMoney(totalMarket)}</div></div>
+      <div><div class="metric-label">全部損益合計</div><div class="metric-value ${pnlClass(totalPnl)}">${fmtMoney(totalPnl)}</div></div>
+    </div>
+    <div class="grid-4">${cards}</div>
+  `;
+}
+
+/* ================= 股票 s06 股價更新 ================= */
+function renderStockPriceUpdate(){
+  const stockRows = Object.entries(state.stocks).map(([code, name]) => {
+    const codeStr = fmtStockCode(code);
+    const price = state.prices[codeStr] != null ? Number(state.prices[codeStr]) : 0;
+    return `
+    <tr>
+      <td class="txt">${codeStr}</td>
+      <td class="txt">${name}</td>
+      <td>
+        <input type="number" class="price-input" data-stock-price-code="${codeStr}" value="${fmtNum(price, 3)}" step="0.001">
+      </td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <p class="section-title">06｜股價更新 & 股票清單管理</p>
+    <p class="section-desc">新增關注的股票清單，並可更新最新現價(更新後會自動套用到持股總表與個人資產)。</p>
+
+    <div class="form-card">
+      <p style="font-weight:bold; margin-top:0; margin-bottom:10px;">新增股票至清單</p>
+      <div class="new-holder-row" style="margin-bottom:0;">
+        <input type="text" id="newStockCodeInput" placeholder="股票代號 (如 0050)" style="width: 140px;">
+        <input type="text" id="newStockNameInput" placeholder="股票名稱 (如 元大台灣50)" style="width: 140px;">
+        <button class="btn" id="addStockBtn">新增股票</button>
+      </div>
+    </div>
+
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr><th>股票代號</th><th>股票名稱</th><th>目前現價 (NT$)</th></tr></thead>
+        <tbody>${stockRows || '<tr><td colspan="3"><div class="empty-state">尚無股票資料，請先在上方新增</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 股票 s02 交易明細 ================= */
+function renderStockTransactions(){
+  const rows = sortByLatestDate(state.transactions);
+  const holderOptions = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('');
+
+  const stockOptions = Object.entries(state.stocks)
+    .map(([code, name]) => {
+      const cStr = fmtStockCode(code);
+      return `<option value="${cStr}">${cStr}｜${name}</option>`;
+    })
+    .join('');
+
+  const tableRows = rows.map(t=>`
+    <tr>
+      <td class="txt">${displayDateOnly(t)}</td>
+      <td class="txt">${t.holder}</td>
+      <td class="txt">${fmtStockCode(t.code)}</td>
+      <td class="txt">${t.name}</td>
+      <td><span class="pill ${t.action==='buy'?'buy':'sell'}">${t.action==='buy'?'買進':'賣出'}</span></td>
+      <td>${fmtNum(t.shares)}</td>
+      <td>${fmtNum(t.price)}</td>
+      <td>${fmtNum(t.fee,0)}</td>
+      <td class="txt">${t.note||''}</td>
+      <td><button class="icon-btn" data-del-tx="${t.id}" title="刪除">✕</button></td>
+    </tr>`).join('');
+
+  return `
+    <p class="section-title">02｜股票交易明細</p>
+    <p class="section-desc">記錄股票買進、賣出及交易費用。</p>
+
+    <div class="form-card">
+      <form id="txForm">
+        <div class="form-grid">
+          <div class="field"><label>交易日期</label><input type="date" id="tx_date" value="${todayStr()}" required></div>
+          <div class="field"><label>持有人</label><select id="tx_holder">${holderOptions}</select></div>
+          <div class="field"><label>選擇股票</label>
+            <select id="tx_stock_select" required>
+              <option value="" disabled selected>請選擇股票</option>
+              ${stockOptions}
+            </select>
+          </div>
+          <div class="field"><label>買賣別</label>
+            <select id="tx_action"><option value="buy">買進</option><option value="sell">賣出</option></select>
+          </div>
+          <div class="field"><label>股數</label><input type="number" id="tx_shares" min="0" step="1" required></div>
+          <div class="field"><label>成交價</label><input type="number" id="tx_price" min="0" step="0.001" required></div>
+          <div class="field"><label>手續費／稅</label><input type="number" id="tx_fee" min="0" step="1" value="0"></div>
+          <div class="field" style="grid-column:span 1;"><label>備註</label><input type="text" id="tx_note" placeholder="選填"></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">新增交易</button>
+          <span class="hint">如需新增股票，請至「股價更新」新增。</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr>
+          <th>日期</th><th>持有人</th><th>代號</th><th>股票名稱</th><th>買賣</th>
+          <th>股數</th><th>成交價</th><th>手續費／稅</th><th>備註</th><th></th>
+        </tr></thead>
+        <tbody>${tableRows || '<tr><td colspan="10" class="txt"><div class="empty-state">還沒有交易紀錄</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 股票 s03 持股總表 ================= */
+function renderStockHoldings(){
+  const holdings=computeHoldings().filter(h=>h.shares>0.0001)
+    .sort((a,b)=> a.holder<b.holder?-1:a.holder>b.holder?1:(a.code<b.code?-1:1));
+
+  const rows = holdings.map(h=>{
+    const avgCost = h.shares>0 ? h.costBasis/h.shares : 0;
+    const price = state.prices[h.code]!=null ? Number(state.prices[h.code]) : avgCost;
+    const marketValue = h.shares*price;
+    const unrealized = marketValue - h.costBasis;
+    const pct = h.costBasis>0 ? unrealized/h.costBasis*100 : 0;
+    return `
+    <tr>
+      <td class="txt">${h.holder}</td>
+      <td class="txt">${fmtStockCode(h.code)}</td>
+      <td class="txt">${h.name}</td>
+      <td>${fmtNum(h.shares)}</td>
+      <td>${fmtNum(avgCost)}</td>
+      <td>${fmtNum(price)}</td>
+      <td>${fmtMoney(marketValue)}</td>
+      <td class="${pnlClass(unrealized)}">${fmtMoney(unrealized)}</td>
+      <td class="${pnlClass(pct)}">${fmtPct(pct)}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <p class="section-title">03｜持股總表</p>
+    <p class="section-desc">統計「持有人＋股票」之股數、平均成本、現價與未實現損益。（現價直接抓取「股價更新」之價格）</p>
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr>
+          <th>持有人</th><th>代號</th><th>股票名稱</th>
+          <th>股數</th><th>均價成本</th><th>現價</th>
+          <th>市值</th><th>未實現損益</th><th>報酬率</th>
+        </tr></thead>
+        <tbody>${rows || '<tr><td colspan="9"><div class="empty-state">目前沒有持股</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 股票 s04 個人持股 ================= */
+function renderStockPersonal(){
+  if(!state.personalHolder || !state.holders.includes(state.personalHolder)){
+    state.personalHolder = state.holders[0]||null;
+  }
+  const pills = state.holders.map(h=>`
+    <button class="${state.personalHolder===h?'active':''}" data-personal-holder="${h}">${h}</button>`).join('');
+
+  if(!state.personalHolder){
+    return `<p class="section-title">04｜個人持股</p><p class="section-desc">分開檢視各自的股票投資狀況。</p><div class="empty-state">尚未設定任何持有人</div>`;
+  }
+
+  const holder=state.personalHolder;
+  const allHoldings=computeHoldings();
+  const myHoldings=allHoldings.filter(h=>h.holder===holder && h.shares>0.0001);
+  const summary=computeHolderSummary(allHoldings).find(s=>s.holder===holder) ||
+    {investedCost:0,marketValue:0,unrealized:0,realizedPnl:0,totalPnl:0,returnPct:0};
+
+  const holdingRows = myHoldings.map(h=>{
+    const avgCost=h.shares>0?h.costBasis/h.shares:0;
+    const price=state.prices[h.code]!=null?Number(state.prices[h.code]):avgCost;
+    const marketValue=h.shares*price;
+    const unrealized=marketValue-h.costBasis;
+    return `<tr>
+      <td class="txt">${fmtStockCode(h.code)}</td><td class="txt">${h.name}</td>
+      <td>${fmtNum(h.shares)}</td>
+      <td>${fmtNum(avgCost)}</td>
+      <td>${fmtNum(price)}</td>
+      <td>${fmtMoney(marketValue)}</td>
+      <td class="${pnlClass(unrealized)}">${fmtMoney(unrealized)}</td>
+    </tr>`;
+  }).join('');
+
+  const myTx = sortByLatestDate(state.transactions.filter(t=>t.holder===holder));
+  const txRows=myTx.map(t=>`
+    <tr>
+      <td class="txt">${displayDateOnly(t)}</td><td class="txt">${fmtStockCode(t.code)}</td><td class="txt">${t.name}</td>
+      <td><span class="pill ${t.action==='buy'?'buy':'sell'}">${t.action==='buy'?'買進':'賣出'}</span></td>
+      <td>${fmtNum(t.shares)}</td><td>${fmtNum(t.price)}</td>
+    </tr>`).join('');
+
+  return `
+    <p class="section-title">04｜個人持股</p>
+    <p class="section-desc">分開檢視各自的股票投資狀況。</p>
+    <div class="holder-select">${pills}</div>
+
+    <div class="grid grid-2" style="margin-bottom:20px;">
+      <div class="card holder-card">
+        <p class="holder-name">${holder}的股票資產概況</p>
+        <div class="metric-row"><span class="label">投入成本</span><span class="value">${fmtMoney(summary.investedCost)}</span></div>
+        <div class="metric-row"><span class="label">目前市值</span><span class="value">${fmtMoney(summary.marketValue)}</span></div>
+        <div class="metric-row"><span class="label">未實現損益</span><span class="value ${pnlClass(summary.unrealized)}">${fmtMoney(summary.unrealized)}</span></div>
+        <div class="metric-row"><span class="label">已實現損益</span><span class="value ${pnlClass(summary.realizedPnl)}">${fmtMoney(summary.realizedPnl)}</span></div>
+        <div class="metric-row"><span class="label">報酬率</span><span class="value ${pnlClass(summary.returnPct)}">${fmtPct(summary.returnPct)}</span></div>
+      </div>
+      <div class="card">
+        <p class="holder-name">${holder}持有股票</p>
+        <div class="table-wrap table-center" style="border:none;">
+          <table style="min-width:0;">
+            <thead><tr><th>代號</th><th>名稱</th><th>股數</th><th>均價</th><th>現價</th><th>市值</th><th>損益</th></tr></thead>
+            <tbody>${holdingRows || '<tr><td colspan="7"><div class="empty-state">目前沒有持股</div></td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-title" style="font-size:16px;">${holder}的交易紀錄</p>
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr><th>日期</th><th>代號</th><th>名稱</th><th>買賣</th><th>股數</th><th>成交價</th></tr></thead>
+        <tbody>${txRows || '<tr><td colspan="6"><div class="empty-state">還沒有交易紀錄</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 股票 s05 贈與/劃撥 ================= */
+function renderStockGifts(){
+  const holderOptions = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('');
+  const stockOptions = Object.entries(state.stocks)
+    .map(([code, name]) => {
+      const cStr = fmtStockCode(code);
+      return `<option value="${cStr}">${cStr}｜${name}</option>`;
+    })
+    .join('');
+
+  const rows = sortByLatestDate(state.gifts);
+
+  const tableRows = rows.map(g=>`
+    <tr>
+      <td class="txt">${displayDateOnly(g)}</td>
+      <td class="txt">${g.from}</td>
+      <td class="txt">${g.to}</td>
+      <td class="txt">${fmtStockCode(g.code)}</td>
+      <td class="txt">${g.name}</td>
+      <td>${fmtNum(g.shares)}</td>
+      <td class="txt">${g.note||''}</td>
+      <td><button class="icon-btn" data-del-gift="${g.id}" title="刪除">✕</button></td>
+    </tr>`).join('');
+
+  return `
+    <p class="section-title">05｜股票贈與 / 劃撥</p>
+    <p class="section-desc">記錄股票轉讓，系統自動增減贈出/接收者持股，不影響金流。</p>
+
+    <div class="form-card">
+      <form id="giftForm">
+        <div class="form-grid">
+          <div class="field"><label>劃撥日期</label><input type="date" id="gift_date" value="${todayStr()}" required></div>
+          <div class="field"><label>贈出者 (扣股)</label><select id="gift_from">${holderOptions}</select></div>
+          <div class="field"><label>接收者 (加股)</label><select id="gift_to">${holderOptions}</select></div>
+          <div class="field"><label>選擇股票</label>
+            <select id="gift_stock_select" required>
+              <option value="" disabled selected>請選擇股票</option>
+              ${stockOptions}
+            </select>
+          </div>
+          <div class="field"><label>贈與股數</label><input type="number" id="gift_shares" min="1" step="1" required></div>
+          <div class="field" style="grid-column:span 3;"><label>備註</label><input type="text" id="gift_note" placeholder="選填"></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">新增股票贈與</button>
+          <span class="hint">新增後會自動更新雙方的持股數量與總市值</span>
+        </div>
+      </form>
+    </div>
+
+    <p class="section-title" style="font-size:16px;">股票贈與 / 劃撥明細</p>
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr>
+          <th>日期</th><th>贈出者</th><th>接收者</th><th>代號</th><th>股票名稱</th>
+          <th>股數</th><th>備註</th><th></th>
+        </tr></thead>
+        <tbody>${tableRows || '<tr><td colspan="8" class="txt"><div class="empty-state">還沒有股票贈與紀錄</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 資產 a02 可用資金/代管 ================= */
+function renderStockCashflow(){
+  const holderOptions = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('');
+  const rows = sortByLatestDate(state.cashflow);
+
+  const balances={};
+  for(const h of state.holders) balances[h]=0;
+
+  for(const c of state.cashflow){
+    if(!(c.person in balances)) balances[c.person]=0;
+    const amt=Number(c.amount)||0;
+    if(c.type==='transfer_in') balances[c.person] += amt;
+    else if(c.type==='return') balances[c.person] -= amt;
+    else if(c.type==='advance') balances[c.person] -= amt;
+  }
+
+  for(const t of state.transactions){
+    if(!(t.holder in balances)) balances[t.holder]=0;
+    const shares = Number(t.shares)||0;
+    const price = Number(t.price)||0;
+    const fee = Number(t.fee)||0;
+    
+    if(t.action === 'buy'){
+      const totalCost = (shares * price) + fee;
+      balances[t.holder] -= totalCost;
+    } else if(t.action === 'sell'){
+      const totalProceeds = (shares * price) - fee;
+      balances[t.holder] += totalProceeds;
+    }
+  }
+
+  const balanceCards = Object.entries(balances).map(([name, rawBal])=>{
+    const isMe = (name === '本人');
+    const bal = Math.round(rawBal);
+
+    let labelText = '';
+    let hintText = '';
+    let colorClass = '';
+
+    if (isMe) {
+      labelText = '目前可用資金';
+      if (bal > 0) {
+        colorClass = 'gain';
+        hintText = '（未買股的閒置現金）';
+      } else if (bal < 0) {
+        colorClass = 'loss';
+        hintText = '（目前買股已透支/墊付，需再投入資金）';
+      } else {
+        colorClass = 'flat';
+        hintText = '';
+      }
+    } else {
+      if (bal === 0) {
+        labelText = '代管剩餘現金';
+        colorClass = 'flat';
+        hintText = '';
+      } else if (bal < 0) {
+        labelText = '需要補的金額(代墊)';
+        colorClass = 'loss';
+        hintText = '（代墊金額已超過預存，對方需補款）';
+      } else {
+        labelText = '代管剩餘現金';
+        colorClass = 'gain';
+        hintText = '';
+      }
+    }
+
+    return `
+    <div class="card holder-card">
+      <p class="holder-name">${name}</p>
+      <div class="metric-row">
+        <span class="label">${labelText}</span>
+        <span class="value ${colorClass}">${fmtMoney(Math.abs(bal))}</span>
+      </div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">
+        ${hintText}
+      </div>
+    </div>`;
+  }).join('');
+
+  const typeLabel={transfer_in:'匯款/預存資金', return:'返還/提領現金', advance:'其他雜項代墊'};
+  const typePill={transfer_in:'buy', return:'sell', advance:''};
+
+  const tableRows = rows.map(c=>`
+    <tr>
+      <td class="txt">${displayDateOnly(c)}</td>
+      <td class="txt">${c.person}</td>
+      <td><span class="pill ${typePill[c.type]}">${typeLabel[c.type]||c.type}</span></td>
+      <td>${fmtMoney(c.amount)}</td>
+      <td class="txt">${c.note||''}</td>
+      <td><button class="icon-btn" data-del-cf="${c.id}" title="刪除">✕</button></td>
+    </tr>`).join('');
+
+  return `
+    <p class="section-title">03｜可用資金 / 代管</p>
+    <p class="section-desc">自動彙整「資金進出 + 買賣扣除/回收」，顯示閒置可用現金。</p>
+
+    <div class="grid grid-4" style="margin-bottom:20px;">${balanceCards}</div>
+
+    <div class="form-card">
+      <form id="cfForm">
+        <div class="form-grid">
+          <div class="field"><label>日期</label><input type="date" id="cf_date" value="${todayStr()}" required></div>
+          <div class="field"><label>對象</label><select id="cf_person">${holderOptions}</select></div>
+          <div class="field"><label>資金動作</label>
+            <select id="cf_type">
+              <option value="transfer_in">匯款 / 注入資金（預存買股金）</option>
+              <option value="return">返還 / 提領現金（退還款項或提領）</option>
+              <option value="advance">代墊雜項（如過戶費、額外規費）</option>
+            </select>
+          </div>
+          <div class="field"><label>金額</label><input type="number" id="cf_amount" min="0" step="1" required></div>
+          <div class="field" style="grid-column:span 2;"><label>備註</label><input type="text" id="cf_note" placeholder="選填"></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">新增資金</button>
+          <span class="hint">買賣股票的花費與回收會由系統自動計算，無需重複在此輸入！</span>
+        </div>
+      </form>
+    </div>
+
+    <p class="section-title" style="font-size:16px;">資金進出明細</p>
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr><th>日期</th><th>對象</th><th>動作</th><th>金額</th><th>備註</th><th></th></tr></thead>
+        <tbody>${tableRows || '<tr><td colspan="6"><div class="empty-state">還沒有人工資金往來紀錄</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 黃金 g01 總覽 ================= */
+function renderGoldOverview(){
+  const holdings=computeGoldHoldings();
+  const summaries=computeGoldHolderSummary(holdings);
+  const totalInvested=summaries.reduce((s,x)=>s+x.investedCost,0);
+  const totalMarket=summaries.reduce((s,x)=>s+x.marketValue,0);
+  const totalPnl=summaries.reduce((s,x)=>s+x.totalPnl,0);
+
+  const cards = state.holders.map(name=>{
+    const s = summaries.find(x=>x.holder===name) || {investedCost:0,marketValue:0,unrealized:0,realizedPnl:0,totalPnl:0,returnPct:0};
+    return `
+    <div class="card holder-card">
+      <p class="holder-name">${name}</p>
+      <div class="metric-row"><span class="label">投入成本</span><span class="value">${fmtMoney(s.investedCost)}</span></div>
+      <div class="metric-row"><span class="label">目前市值</span><span class="value">${fmtMoney(s.marketValue)}</span></div>
+      <div class="metric-row"><span class="label">未實現損益</span><span class="value ${pnlClass(s.unrealized)}">${fmtMoney(s.unrealized)}</span></div>
+      <div class="metric-row"><span class="label">已實現損益</span><span class="value ${pnlClass(s.realizedPnl)}">${fmtMoney(s.realizedPnl)}</span></div>
+      <div class="metric-row"><span class="label">報酬率</span><span class="value ${pnlClass(s.returnPct)}">${fmtPct(s.returnPct)}</span></div>
+    </div>`;
+  }).join('');
+
+  return `
+    <p class="section-title">01｜黃金總覽</p>
+    <p class="section-desc">顯示黃金投入成本、目前市值、損益，以及全部資產合計。</p>
+    <div class="total-bar">
+      <div><div class="metric-label">全部投入成本</div><div class="metric-value">${fmtMoney(totalInvested)}</div></div>
+      <div><div class="metric-label">全部目前市值</div><div class="metric-value">${fmtMoney(totalMarket)}</div></div>
+      <div><div class="metric-label">全部損益合計</div><div class="metric-value ${pnlClass(totalPnl)}">${fmtMoney(totalPnl)}</div></div>
+    </div>
+    <div class="grid-4">${cards}</div>
+  `;
+}
+
+/* ================= 黃金 g06 金價更新 ================= */
+function renderGoldPriceUpdate(){
+  const ingotPrice = state.goldPrices['ingot'] || 0;
+  const ornamentPrice = state.goldPrices['ornament'] || 0;
+
+  return `
+    <p class="section-title">06｜金價更新</p>
+    <p class="section-desc">填寫每日台幣金價（每錢），系統將據此計算目前總市值與未實現損益。</p>
+
+    <div class="form-card">
+      <form id="goldPriceForm">
+        <div class="form-grid">
+          <div class="field">
+            <label>金塊單價 (NT$ / 錢)</label>
+            <input type="number" id="gp_ingot" value="${ingotPrice}" min="0" step="1" required>
+          </div>
+          <div class="field">
+            <label>金飾單價 (NT$ / 錢)</label>
+            <input type="number" id="gp_ornament" value="${ornamentPrice}" min="0" step="1" required>
+          </div>
+        </div>
+        <div class="form-actions" style="margin-top:16px;">
+          <button type="submit" class="btn">更新黃金單價</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+/* ================= 黃金 g02 交易明細 ================= */
+function renderGoldTransactions(){
+  const rows = sortByLatestDate(state.goldTransactions);
+  const holderOptions = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('');
+
+  const typeMap = { 'ingot': '金塊', 'ornament': '金飾' };
+
+  const tableRows = rows.map(t=>`
+    <tr>
+      <td class="txt">${displayDateOnly(t)}</td>
+      <td class="txt">${t.holder}</td>
+      <td class="txt">${typeMap[t.type]||t.type}</td>
+      <td><span class="pill ${t.action==='buy'?'buy':'sell'}">${t.action==='buy'?'買進':'賣出'}</span></td>
+      <td>${fmtWeight(t.weight)} 錢 (${fmtNum(t.weight*3.75, 2)} g)</td>
+      <td>${fmtMoney(t.price)}</td>
+      <td>${fmtMoney(t.fee)}</td>
+      <td class="txt">${t.note||''}</td>
+      <td><button class="icon-btn" data-del-gtx="${t.id}" title="刪除">✕</button></td>
+    </tr>`).join('');
+
+  return `
+    <p class="section-title">02｜黃金交易明細</p>
+    <p class="section-desc">記錄黃金買進、賣出、每錢價格與工錢。</p>
+
+    <div class="form-card">
+      <form id="goldTxForm">
+        <div class="form-grid">
+          <div class="field"><label>日期</label><input type="date" id="gtx_date" value="${todayStr()}" required></div>
+          <div class="field"><label>持有人</label><select id="gtx_holder">${holderOptions}</select></div>
+          <div class="field"><label>類型</label>
+            <select id="gtx_type">
+              <option value="ingot">金塊</option>
+              <option value="ornament">金飾</option>
+            </select>
+          </div>
+          <div class="field"><label>買賣別</label>
+            <select id="gtx_action"><option value="buy">買進</option><option value="sell">賣出</option></select>
+          </div>
+          <div class="field">
+            <label>重量</label>
+            <div style="display:flex; gap:4px;">
+              <input type="number" id="gtx_weight" min="0.001" step="0.001" placeholder="數值" required>
+              <select id="gtx_unit" style="width:70px;"><option value="qian">錢</option><option value="g">克</option></select>
+            </div>
+          </div>
+          <div class="field"><label>單價 (NT$ / 錢)</label><input type="number" id="gtx_price" min="0" step="1" required></div>
+          <div class="field"><label>工錢 / 規費</label><input type="number" id="gtx_fee" min="0" step="1" value="0"></div>
+          <div class="field" style="grid-column:span 1;"><label>備註</label><input type="text" id="gtx_note" placeholder="選填"></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">新增交易</button>
+          <span class="hint">1 錢 = 3.75 公克，輸入克數系統會自動換算為錢數存檔</span>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr>
+          <th>日期</th><th>持有人</th><th>類型</th><th>買賣</th>
+          <th>重量 (錢 / 克)</th><th>單價(每錢)</th><th>工錢</th><th>備註</th><th></th>
+        </tr></thead>
+        <tbody>${tableRows || '<tr><td colspan="9" class="txt"><div class="empty-state">還沒有黃金交易紀錄</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 黃金 g03 持金總表 ================= */
+function renderGoldHoldings(){
+  const holdings=computeGoldHoldings().filter(h=>h.weight>0.0001)
+    .sort((a,b)=> a.holder<b.holder?-1:a.holder>b.holder?1:(a.itemType<b.itemType?-1:1));
+
+  const typeMap = { 'ingot': '金塊', 'ornament': '金飾' };
+
+  const rows = holdings.map(h=>{
+    const avgCost = h.weight>0 ? h.costBasis/h.weight : 0;
+    const price = state.goldPrices[h.itemType]!=null ? Number(state.goldPrices[h.itemType]) : avgCost;
+    const marketValue = h.weight*price;
+    const unrealized = marketValue - h.costBasis;
+    const pct = h.costBasis>0 ? unrealized/h.costBasis*100 : 0;
+    return `
+    <tr>
+      <td class="txt">${h.holder}</td>
+      <td class="txt">${typeMap[h.itemType]||h.itemType}</td>
+      <td>${fmtWeight(h.weight)} 錢</td>
+      <td>${fmtNum(h.weight*3.75,2)} g</td>
+      <td>${fmtNum(avgCost,0)}</td>
+      <td>${fmtNum(price,0)}</td>
+      <td>${fmtMoney(marketValue)}</td>
+      <td class="${pnlClass(unrealized)}">${fmtMoney(unrealized)}</td>
+      <td class="${pnlClass(pct)}">${fmtPct(pct)}</td>
+    </tr>`;
+  }).join('');
+
+  return `
+    <p class="section-title">03｜持金總表</p>
+    <p class="section-desc">統計「持有人＋黃金類型」之重量、平均成本、現價與未實現損益。（現價直接抓取「金價更新」之價格）</p>
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr>
+          <th>持有人</th><th>黃金類型</th>
+          <th>重量(錢)</th><th>重量(克)</th><th>均價成本/錢</th><th>現價/錢</th>
+          <th>市值</th><th>未實現損益</th><th>報酬率</th>
+        </tr></thead>
+        <tbody>${rows || '<tr><td colspan="9"><div class="empty-state">目前沒有持金</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 黃金 g04 個人持金 ================= */
+function renderGoldPersonal(){
+  if(!state.personalHolder || !state.holders.includes(state.personalHolder)){
+    state.personalHolder = state.holders[0]||null;
+  }
+  const pills = state.holders.map(h=>`
+    <button class="${state.personalHolder===h?'active':''}" data-personal-holder="${h}">${h}</button>`).join('');
+
+  if(!state.personalHolder){
+    return `<p class="section-title">04｜個人持金</p><p class="section-desc">分開檢視各自的黃金狀況。</p><div class="empty-state">尚未設定任何持有人</div>`;
+  }
+
+  const holder=state.personalHolder;
+  const allHoldings=computeGoldHoldings();
+  const myHoldings=allHoldings.filter(h=>h.holder===holder && h.weight>0.0001);
+  const summary=computeGoldHolderSummary(allHoldings).find(s=>s.holder===holder) ||
+    {investedCost:0,marketValue:0,unrealized:0,realizedPnl:0,totalPnl:0,returnPct:0};
+
+  const typeMap = { 'ingot': '金塊', 'ornament': '金飾' };
+
+  const holdingRows = myHoldings.map(h=>{
+    const avgCost=h.weight>0?h.costBasis/h.weight:0;
+    const price=state.goldPrices[h.itemType]!=null?Number(state.goldPrices[h.itemType]):avgCost;
+    const marketValue=h.weight*price;
+    const unrealized=marketValue-h.costBasis;
+    return `<tr>
+      <td class="txt">${typeMap[h.itemType]||h.itemType}</td>
+      <td>${fmtWeight(h.weight)} 錢</td>
+      <td>${fmtNum(avgCost,0)}</td>
+      <td>${fmtNum(price,0)}</td>
+      <td>${fmtMoney(marketValue)}</td>
+      <td class="${pnlClass(unrealized)}">${fmtMoney(unrealized)}</td>
+    </tr>`;
+  }).join('');
+
+  const myTx = sortByLatestDate(state.goldTransactions.filter(t=>t.holder===holder));
+  const txRows=myTx.map(t=>`
+    <tr>
+      <td class="txt">${displayDateOnly(t)}</td><td class="txt">${typeMap[t.type]||t.type}</td>
+      <td><span class="pill ${t.action==='buy'?'buy':'sell'}">${t.action==='buy'?'買進':'賣出'}</span></td>
+      <td>${fmtWeight(t.weight)} 錢</td><td>${fmtMoney(t.price)}</td>
+    </tr>`).join('');
+
+  return `
+    <p class="section-title">04｜個人持金</p>
+    <p class="section-desc">分開檢視各自的黃金資產狀況。</p>
+    <div class="holder-select">${pills}</div>
+
+    <div class="grid grid-2" style="margin-bottom:20px;">
+      <div class="card holder-card">
+        <p class="holder-name">${holder}的黃金資產概況</p>
+        <div class="metric-row"><span class="label">投入成本</span><span class="value">${fmtMoney(summary.investedCost)}</span></div>
+        <div class="metric-row"><span class="label">目前市值</span><span class="value">${fmtMoney(summary.marketValue)}</span></div>
+        <div class="metric-row"><span class="label">未實現損益</span><span class="value ${pnlClass(summary.unrealized)}">${fmtMoney(summary.unrealized)}</span></div>
+        <div class="metric-row"><span class="label">已實現損益</span><span class="value ${pnlClass(summary.realizedPnl)}">${fmtMoney(summary.realizedPnl)}</span></div>
+        <div class="metric-row"><span class="label">報酬率</span><span class="value ${pnlClass(summary.returnPct)}">${fmtPct(summary.returnPct)}</span></div>
+      </div>
+      <div class="card">
+        <p class="holder-name">${holder}持有黃金</p>
+        <div class="table-wrap table-center" style="border:none;">
+          <table style="min-width:0;">
+            <thead><tr><th>類型</th><th>重量(錢)</th><th>均價</th><th>現價</th><th>市值</th><th>損益</th></tr></thead>
+            <tbody>${holdingRows || '<tr><td colspan="6"><div class="empty-state">目前沒有持金</div></td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-title" style="font-size:16px;">${holder}的黃金交易紀錄</p>
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr><th>日期</th><th>類型</th><th>買賣</th><th>重量(錢)</th><th>成交單價</th></tr></thead>
+        <tbody>${txRows || '<tr><td colspan="5"><div class="empty-state">還沒有交易紀錄</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= 黃金 g05 黃金贈與 ================= */
+function renderGoldGifts(){
+  const holderOptionsWithOther = state.holders.map(h=>`<option value="${h}">${h}</option>`).join('') + `<option value="其他">其他</option>`;
+  const rows = sortByLatestDate(state.goldGifts);
+
+  const typeMap = { 'ingot': '金塊', 'ornament': '金飾' };
+
+  const tableRows = rows.map(g=>`
+    <tr>
+      <td class="txt">${displayDateOnly(g)}</td>
+      <td class="txt">${g.from}</td>
+      <td class="txt">${g.to}</td>
+      <td class="txt">${typeMap[g.type]||g.type}</td>
+      <td>${fmtWeight(g.weight)} 錢 (${fmtNum(g.weight*3.75, 2)} g)</td>
+      <td class="txt">${g.note||''}</td>
+      <td><button class="icon-btn" data-del-ggift="${g.id}" title="刪除">✕</button></td>
+    </tr>`).join('');
+
+  return `
+    <p class="section-title">05｜黃金贈與</p>
+    <p class="section-desc">記錄黃金轉讓，系統自動調整雙方持金重量，不影響金流。</p>
+
+    <div class="form-card">
+      <form id="goldGiftForm">
+        <div class="form-grid">
+          <div class="field"><label>劃撥日期</label><input type="date" id="ggift_date" value="${todayStr()}" required></div>
+          
+          <div class="field">
+            <label>贈出者</label>
+            <select id="ggift_from">${holderOptionsWithOther}</select>
+            <input type="text" id="ggift_from_custom" placeholder="請輸入贈出者名稱" style="display:none; margin-top:6px;">
+          </div>
+          
+          <div class="field">
+            <label>接收者</label>
+            <select id="ggift_to">${holderOptionsWithOther}</select>
+            <input type="text" id="ggift_to_custom" placeholder="請輸入接收者名稱" style="display:none; margin-top:6px;">
+          </div>
+          
+          <div class="field"><label>贈與類型</label>
+            <select id="ggift_type">
+              <option value="ingot">金塊</option>
+              <option value="ornament">金飾</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>贈與重量</label>
+            <div style="display:flex; gap:4px;">
+              <input type="number" id="ggift_weight" min="0.001" step="0.001" placeholder="數值" required>
+              <select id="ggift_unit" style="width:70px;"><option value="qian">錢</option><option value="g">克</option></select>
+            </div>
+          </div>
+          <div class="field" style="grid-column:span 3;"><label>備註</label><input type="text" id="ggift_note" placeholder="選填"></div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn">新增黃金贈與</button>
+          <span class="hint">新增後自動更新持金數量</span>
+        </div>
+      </form>
+    </div>
+
+    <p class="section-title" style="font-size:16px;">黃金贈與明細</p>
+    <div class="table-wrap table-center">
+      <table>
+        <thead><tr>
+          <th>日期</th><th>贈出者</th><th>接收者</th><th>類型</th>
+          <th>重量</th><th>備註</th><th></th>
+        </tr></thead>
+        <tbody>${tableRows || '<tr><td colspan="7" class="txt"><div class="empty-state">還沒有黃金贈與紀錄</div></td></tr>'}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+/* ================= events ================= */
+function bindActiveEvents(){
+  // a00 手動輸入現金 - 即時計算與儲存邏輯
+  const inputCashManual = document.getElementById('input_cash_manual');
+  const displayGrandTotal = document.getElementById('display_grand_total');
+  
+  if(inputCashManual && displayGrandTotal){
+    const stockSummary = computeHolderSummary(computeHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+    const goldSummary = computeGoldHolderSummary(computeGoldHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+    const baseStockGold = stockSummary.marketValue + goldSummary.marketValue;
+
+    // 即時計算總資產
+    inputCashManual.addEventListener('input', ()=>{
+      const currentInputCash = Number(inputCashManual.value) || 0;
+      displayGrandTotal.textContent = fmtMoney(baseStockGold + currentInputCash);
+    });
+  }
+
+  const btnSaveCashManual = document.getElementById('btn_save_cash_manual');
+  if(btnSaveCashManual && inputCashManual){
+    btnSaveCashManual.addEventListener('click', async ()=>{
+      const rawValue = inputCashManual.value.trim();
+      const inputCashNum = Number(rawValue) || 0;
+
+      const stockSummary = computeHolderSummary(computeHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+      const goldSummary = computeGoldHolderSummary(computeGoldHoldings()).find(s=>s.holder==='本人') || {marketValue:0};
+
+      // 更新最新股票與黃金市值至資產配置
+      state.allocationConfig.stockAmount = stockSummary.marketValue;
+      state.allocationConfig.goldAmount = goldSummary.marketValue;
+
+      // 若有輸入且大於 0，才更新資產配置的現金欄位
+      if(rawValue !== '' && inputCashNum > 0){
+        state.allocationConfig.cashAmount = inputCashNum;
+        showToast('現金金額已更新並同步至資產配置！');
+      } else {
+        showToast('已將最新股票與黃金市值更新至資產配置！');
+      }
+
+      renderActive();
+      await saveToGoogleSheet();
+    });
+  }
+
+  // 資產配置防呆即時計算
+  document.querySelectorAll('.alloc-pct-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const c = Number(document.getElementById('alloc_cash_pct').value) || 0;
+      const g = Number(document.getElementById('alloc_gold_pct').value) || 0;
+      const s = Number(document.getElementById('alloc_stock_pct').value) || 0;
+      const total = c + g + s;
+      
+      const submitBtn = document.getElementById('allocSubmitBtn');
+      const hintMsg = document.getElementById('allocHintMsg');
+
+      if (total === 100) {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('btn-disabled');
+        hintMsg.classList.remove('error');
+        hintMsg.textContent = '請確保目標比例加總為 100%';
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.classList.add('btn-disabled');
+        hintMsg.classList.add('error');
+        hintMsg.textContent = `目標比例相加必須為 100%（目前：${total}%）`;
+      }
+    });
+  });
+
+  const allocForm = document.getElementById('allocForm');
+  if(allocForm){
+    allocForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      state.allocationConfig = {
+        cashAmount: Number(document.getElementById('alloc_cash').value)||0,
+        cashTargetPct: Number(document.getElementById('alloc_cash_pct').value)||0,
+        goldAmount: Number(document.getElementById('alloc_gold').value)||0,
+        goldTargetPct: Number(document.getElementById('alloc_gold_pct').value)||0,
+        stockAmount: Number(document.getElementById('alloc_stock').value)||0,
+        stockTargetPct: Number(document.getElementById('alloc_stock_pct').value)||0
+      };
+      renderActive();
+      await saveToGoogleSheet();
+    });
+  }
+
+  // 股票 s06: 股價更新與新增
+  const addStockBtn = document.getElementById('addStockBtn');
+  if(addStockBtn){
+    addStockBtn.addEventListener('click', async ()=>{
+      const codeInput = document.getElementById('newStockCodeInput');
+      const nameInput = document.getElementById('newStockNameInput');
+      const code = fmtStockCode(codeInput.value);
+      const name = nameInput.value.trim();
+
+      if(!code || !name){
+        showToast('請填寫股票代號與名稱');
+        return;
+      }
+
+      state.stocks[code] = name;
+      renderActive();
+      await saveToGoogleSheet();
+      showToast(`已新增股票：${code} ${name}`);
+    });
+  }
+
+  document.querySelectorAll('[data-stock-price-code]').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const code=fmtStockCode(inp.dataset.stockPriceCode);
+      state.prices[code]=Number(inp.value)||0;
+      await saveToGoogleSheet();
+      showToast(`${code} 價格已更新`);
+    });
+  });
+
+  // 股票 s02: 交易表單
+  const txForm=document.getElementById('txForm');
+  if(txForm){
+    txForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const selectedCode = fmtStockCode(document.getElementById('tx_stock_select').value);
+      const selectedName = state.stocks[selectedCode] || '';
+
+      const t={
+        id:uid(),
+        date:document.getElementById('tx_date').value,
+        holder:document.getElementById('tx_holder').value,
+        code:selectedCode,
+        name:selectedName,
+        action:document.getElementById('tx_action').value,
+        shares:Number(document.getElementById('tx_shares').value),
+        price:Number(document.getElementById('tx_price').value),
+        fee:Number(document.getElementById('tx_fee').value)||0,
+        note:document.getElementById('tx_note').value.trim()
+      };
+      state.transactions.push(t);
+      renderActive();
+      await saveToGoogleSheet();
+    });
+
+    document.querySelectorAll('[data-del-tx]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(!confirm('確定要刪除這筆交易紀錄嗎？')) return;
+        state.transactions = state.transactions.filter(t=>t.id!==btn.dataset.delTx);
+        renderActive();
+        await saveToGoogleSheet();
+      });
+    });
+  }
+
+  // 個人頁切換
+  document.querySelectorAll('[data-personal-holder]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      state.personalHolder=btn.dataset.personalHolder;
+      renderActive();
+    });
+  });
+
+  // 資產 a02: 資金進出
+  const cfForm=document.getElementById('cfForm');
+  if(cfForm){
+    cfForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const c={
+        id:uid(),
+        date:document.getElementById('cf_date').value,
+        person:document.getElementById('cf_person').value,
+        type:document.getElementById('cf_type').value,
+        amount:Number(document.getElementById('cf_amount').value),
+        note:document.getElementById('cf_note').value.trim()
+      };
+      state.cashflow.push(c);
+      renderActive();
+      await saveToGoogleSheet();
+    });
+
+    document.querySelectorAll('[data-del-cf]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(!confirm('確定要刪除這筆資金往來紀錄嗎？')) return;
+        state.cashflow = state.cashflow.filter(c=>c.id!==btn.dataset.delCf);
+        renderActive();
+        await saveToGoogleSheet();
+      });
+    });
+  }
+
+  // 股票 s05: 贈與表單
+  const giftForm=document.getElementById('giftForm');
+  if(giftForm){
+    giftForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const from = document.getElementById('gift_from').value;
+      const to = document.getElementById('gift_to').value;
+      if(from === to){
+        showToast('贈出者與接收者不能是同一人！');
+        return;
+      }
+
+      const selectedCode = fmtStockCode(document.getElementById('gift_stock_select').value);
+      const selectedName = state.stocks[selectedCode] || '';
+
+      const g={
+        id:uid(),
+        date:document.getElementById('gift_date').value,
+        from: from,
+        to: to,
+        code: selectedCode,
+        name: selectedName,
+        shares: Number(document.getElementById('gift_shares').value),
+        note: document.getElementById('gift_note').value.trim()
+      };
+      state.gifts.push(g);
+      renderActive();
+      await saveToGoogleSheet();
+    });
+
+    document.querySelectorAll('[data-del-gift]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(!confirm('確定要刪除這筆贈與紀錄嗎？')) return;
+        state.gifts = state.gifts.filter(g=>g.id!==btn.dataset.delGift);
+        renderActive();
+        await saveToGoogleSheet();
+      });
+    });
+  }
+
+  // 黃金 g06: 單價更新
+  const goldPriceForm = document.getElementById('goldPriceForm');
+  if(goldPriceForm){
+    goldPriceForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      state.goldPrices['ingot'] = Number(document.getElementById('gp_ingot').value)||0;
+      state.goldPrices['ornament'] = Number(document.getElementById('gp_ornament').value)||0;
+      renderActive();
+      await saveToGoogleSheet();
+      showToast('黃金價格已更新！');
+    });
+  }
+
+  // 黃金 g02: 交易明細新增
+  const goldTxForm = document.getElementById('goldTxForm');
+  if(goldTxForm){
+    goldTxForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const rawW = Number(document.getElementById('gtx_weight').value)||0;
+      const unit = document.getElementById('gtx_unit').value;
+      const weightInQian = unit === 'g' ? (rawW / 3.75) : rawW;
+
+      const t = {
+        id: uid(),
+        date: document.getElementById('gtx_date').value,
+        holder: document.getElementById('gtx_holder').value,
+        type: document.getElementById('gtx_type').value,
+        action: document.getElementById('gtx_action').value,
+        weight: weightInQian,
+        price: Number(document.getElementById('gtx_price').value)||0,
+        fee: Number(document.getElementById('gtx_fee').value)||0,
+        note: document.getElementById('gtx_note').value.trim()
+      };
+      state.goldTransactions.push(t);
+      renderActive();
+      await saveToGoogleSheet();
+    });
+
+    document.querySelectorAll('[data-del-gtx]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(!confirm('確定要刪除這筆黃金交易嗎？')) return;
+        state.goldTransactions = state.goldTransactions.filter(t=>t.id!==btn.dataset.delGtx);
+        renderActive();
+        await saveToGoogleSheet();
+      });
+    });
+  }
+
+  // 黃金 g05: 贈與新增 & 動態選單控制
+  const ggFromSelect = document.getElementById('ggift_from');
+  const ggToSelect = document.getElementById('ggift_to');
+  const ggFromCustom = document.getElementById('ggift_from_custom');
+  const ggToCustom = document.getElementById('ggift_to_custom');
+
+  if(ggFromSelect && ggFromCustom){
+    ggFromSelect.addEventListener('change', ()=>{
+      ggFromCustom.style.display = ggFromSelect.value === '其他' ? 'block' : 'none';
+      if(ggFromSelect.value === '其他') ggFromCustom.focus();
+    });
+  }
+
+  if(ggToSelect && ggToCustom){
+    ggToSelect.addEventListener('change', ()=>{
+      ggToCustom.style.display = ggToSelect.value === '其他' ? 'block' : 'none';
+      if(ggToSelect.value === '其他') ggToCustom.focus();
+    });
+  }
+
+  const goldGiftForm = document.getElementById('goldGiftForm');
+  if(goldGiftForm){
+    goldGiftForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      
+      let from = ggFromSelect.value;
+      if(from === '其他'){
+        from = ggFromCustom.value.trim();
+        if(!from){
+          showToast('請輸入贈出者的名稱！');
+          return;
+        }
+      }
+
+      let to = ggToSelect.value;
+      if(to === '其他'){
+        to = ggToCustom.value.trim();
+        if(!to){
+          showToast('請輸入接收者的名稱！');
+          return;
+        }
+      }
+
+      if(from === to){
+        showToast('贈出者與接收者不能是同一人！');
+        return;
+      }
+
+      const rawW = Number(document.getElementById('ggift_weight').value)||0;
+      const unit = document.getElementById('ggift_unit').value;
+      const weightInQian = unit === 'g' ? (rawW / 3.75) : rawW;
+
+      const g = {
+        id: uid(),
+        date: document.getElementById('ggift_date').value,
+        from: from,
+        to: to,
+        type: document.getElementById('ggift_type').value,
+        weight: weightInQian,
+        note: document.getElementById('ggift_note').value.trim()
+      };
+      state.goldGifts.push(g);
+      renderActive();
+      await saveToGoogleSheet();
+    });
+
+    document.querySelectorAll('[data-del-ggift]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(!confirm('確定要刪除這筆黃金贈與嗎？')) return;
+        state.goldGifts = state.goldGifts.filter(g=>g.id!==btn.dataset.delGgift);
+        renderActive();
+        await saveToGoogleSheet();
+      });
+    });
+  }
+}
+
+/* ================= init ================= */
+async function initApp(){
+  renderTabs();
+  await fetchFromGoogleSheet();
+  renderActive();
+}
+
+// 頁面開啟時先檢查驗證狀態
+if (checkAuth()) {
+  initApp();
+}
+</script>
+</body>
+</html>
